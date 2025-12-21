@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ServiceType {
+  CCTV
+  ACCESS_CONTROL
+  FIRE_DETECTION
+  AUTOMATION
+  SMART_LIGHTING
+  MAINTENANCE
+}
+
+enum Urgency {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum PropertyType {
+  HOME
+  BUSINESS
+}
+
+enum OrderStatus {
+  DRAFT
+  SUBMITTED
+  QUOTED
+  CLOSED
+  CANCELLED
+}
+
+// Product model and ProductCategory enum removed for Syscom API integration
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+enum ContactMethod {
+  WHATSAPP
+  CALL
+  EMAIL
+}
+
+model Customer {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  name          String
+  lastName      String
+  phone         String
+  addresses     Address[]
+  leads         Lead[]
+  orders        Order[]
+  appointments  Appointment[]
+  contactMethod ContactMethod
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("customers")
+}
+
+model Address {
+  id         String   @id @default(uuid())
+  street     String
+  noInt      String
+  noExt      String
+  settlement String
+  city       String
+  state      String
+  zipCode    String?
+  references String?
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("addresses")
+}
+
+model Lead {
+  id              String        @id @default(uuid())
+  serviceType     ServiceType
+  description     String
+  budgetEstimated Float?
+  urgency         Urgency       @default(MEDIUM)
+  propertyType    PropertyType
+  numCameras      Int?
+  numAccessPoints Int?
+  customer        Customer      @relation(fields: [customerId], references: [id])
+  customerId      String
+  appointments    Appointment[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("leads")
+}
+
+// Local Product table removed. Using external Syscom ID in OrderItem.
+
+model Order {
+  id           String        @id @default(uuid())
+  status       OrderStatus   @default(DRAFT)
+  subtotal     Float         @default(0)
+  total        Float         @default(0)
+  customer     Customer      @relation(fields: [customerId], references: [id])
+  customerId   String
+  items        OrderItem[]
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  quantity  Int      @default(1)
+  unitPrice Float
+  lineTotal Float
+  productId String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("order_items")
+}
+
+model Appointment {
+  id         String            @id @default(uuid())
+  date       DateTime
+  status     AppointmentStatus @default(SCHEDULED)
+  customer   Customer          @relation(fields: [customerId], references: [id])
+  customerId String
+  lead       Lead?             @relation(fields: [leadId], references: [id])
+  leadId     String?
+  order      Order?            @relation(fields: [orderId], references: [id])
+  orderId    String?
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  @@map("appointments")
+}

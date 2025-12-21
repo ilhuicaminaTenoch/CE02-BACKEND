@@ -1,0 +1,37 @@
+import { Controller, Get, Post, Body, Param, Query, Patch, NotFoundException } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { AppointmentsService } from './appointments.service';
+import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+
+@ApiTags('Appointments')
+@Controller('appointments')
+export class AppointmentsController {
+    constructor(private readonly appointmentsService: AppointmentsService) { }
+
+    @Post()
+    @ApiOperation({ summary: 'Schedule a new appointment' })
+    create(@Body() createAppointmentDto: CreateAppointmentDto) {
+        return this.appointmentsService.create(createAppointmentDto);
+    }
+
+    @Get()
+    @ApiOperation({ summary: 'List appointments with pagination' })
+    findAll(@Query() query: PaginationDto) {
+        return this.appointmentsService.findAll(query);
+    }
+
+    @Get(':id')
+    @ApiOperation({ summary: 'Get appointment by ID' })
+    async findOne(@Param('id') id: string) {
+        const appointment = await this.appointmentsService.findOne(id);
+        if (!appointment) throw new NotFoundException('Appointment not found');
+        return appointment;
+    }
+
+    @Patch(':id')
+    @ApiOperation({ summary: 'Update appointment (e.g. status or date)' })
+    update(@Param('id') id: string, @Body() data: Partial<CreateAppointmentDto>) {
+        return this.appointmentsService.update(id, data);
+    }
+}
