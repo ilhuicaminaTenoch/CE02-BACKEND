@@ -88,7 +88,7 @@ model Lead {
   id              String        @id @default(uuid())
   serviceType     ServiceType
   description     String
-  budgetEstimated Float?
+  budgetEstimated String?
   urgency         Urgency       @default(MEDIUM)
   propertyType    PropertyType
   numCameras      Int?

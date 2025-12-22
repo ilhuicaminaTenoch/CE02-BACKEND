@@ -13,10 +13,10 @@ export class CreateLeadDto {
     @IsNotEmpty()
     description: string;
 
-    @ApiPropertyOptional({ example: 5000.0 })
-    @IsNumber()
+    @ApiPropertyOptional({ example: '$5000-$15000' })
+    @IsString()
     @IsOptional()
-    budgetEstimated?: number;
+    budgetEstimated?: string;
 
     @ApiPropertyOptional({ enum: Urgency, default: Urgency.MEDIUM })
     @IsEnum(Urgency)

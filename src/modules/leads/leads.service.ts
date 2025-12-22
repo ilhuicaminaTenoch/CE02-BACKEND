@@ -10,18 +10,19 @@ export class LeadsService {
 
     async create(createLeadDto: CreateLeadDto) {
         return this.prisma.lead.create({
-            data: createLeadDto,
+            data: createLeadDto as unknown as Prisma.LeadCreateInput,
             include: { customer: true },
         });
     }
 
     async findAll(query: LeadQueryDto) {
-        const { page, limit, serviceType, urgency, customerId, search } = query;
+        const { page, limit, serviceType, urgency, propertyType, customerId, search } = query;
         const skip = (page - 1) * limit;
 
         const where: Prisma.LeadWhereInput = {
             ...(serviceType && { serviceType }),
             ...(urgency && { urgency }),
+            ...(propertyType && { propertyType }),
             ...(customerId && { customerId }),
             ...(search && {
                 description: { contains: search, mode: 'insensitive' },
@@ -60,7 +61,7 @@ export class LeadsService {
     async update(id: string, data: Partial<CreateLeadDto>) {
         return this.prisma.lead.update({
             where: { id },
-            data,
+            data: data as unknown as Prisma.LeadUpdateInput,
         });
     }
 }
