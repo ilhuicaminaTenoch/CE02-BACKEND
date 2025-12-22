@@ -12,15 +12,50 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppointmentsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../common/prisma/prisma.service");
+const mail_service_1 = require("../mail/mail.service");
+const config_1 = require("@nestjs/config");
 let AppointmentsService = class AppointmentsService {
-    constructor(prisma) {
+    constructor(prisma, mailService, configService) {
         this.prisma = prisma;
+        this.mailService = mailService;
+        this.configService = configService;
     }
     async create(createAppointmentDto) {
-        return this.prisma.appointment.create({
+        const appointment = await this.prisma.appointment.create({
             data: createAppointmentDto,
-            include: { customer: true, lead: true },
+            include: {
+                customer: true,
+                lead: true,
+            },
         });
+        this.sendEmails(appointment).catch(err => {
+            console.error('Error in sendEmails background task:', err);
+        });
+        return appointment;
+    }
+    async sendEmails(appointment) {
+        const publicUrl = this.configService.get('APP_PUBLIC_URL', 'http://localhost:3000');
+        const payload = {
+            appointmentId: appointment.id,
+            customerName: `${appointment.customer.name} ${appointment.customer.lastName}`,
+            customerEmail: appointment.customer.email,
+            customerPhone: appointment.customer.phone,
+            serviceType: appointment.lead?.serviceType || 'General',
+            dateTimeISO: appointment.date.toISOString(),
+            dateTimeFormatted: new Date(appointment.date).toLocaleString('es-MX', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            }),
+            modality: appointment.mode,
+            address: 'Consulte el panel técnico',
+            notes: appointment.comments,
+            publicUrl: `${publicUrl}/appointments/${appointment.id}`,
+        };
+        await this.mailService.sendAppointmentConfirmationToCustomer(payload);
+        await this.mailService.sendNewAppointmentNotificationToTechnician(payload);
     }
     async findAll(query) {
         const { page, limit, status, mode, customerId, leadId, search } = query;
@@ -70,6 +105,8 @@ let AppointmentsService = class AppointmentsService {
 exports.AppointmentsService = AppointmentsService;
 exports.AppointmentsService = AppointmentsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        mail_service_1.MailService,
+        config_1.ConfigService])
 ], AppointmentsService);
 //# sourceMappingURL=appointments.service.js.map

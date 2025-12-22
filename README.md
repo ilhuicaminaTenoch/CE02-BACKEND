@@ -40,6 +40,24 @@ Backend robusto desarrollado en NestJS para la gestión de clientes, requerimien
    docker exec -it prograde-api npm run seed
    ```
 
+## Configuración de Correo (SMTP)
+
+El sistema utiliza un módulo de correo para notificar a clientes y técnicos sobre nuevas citas. Para configurarlo, asegúrate de tener las siguientes variables en tu `.env`:
+
+```env
+SMTP_HOST=tu_servidor_smtp
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=tu_usuario
+SMTP_PASS=tu_password
+SMTP_FROM="Seguridad Integral <no-reply@tu-dominio.com>"
+TECH_EMAIL=correo_tecnico@tu-dominio.com
+APP_PUBLIC_URL=http://localhost:3000
+```
+
+> [!NOTE]
+> Si las variables no están configuradas, el sistema registrará un error en los logs pero permitirá que la cita se guarde correctamente (fail-safe).
+
 4. **Documentación API**:
    Accede a `http://localhost:3000/api/docs` para ver y probar todos los endpoints.
 
@@ -72,5 +90,6 @@ Backend robusto desarrollado en NestJS para la gestión de clientes, requerimien
 
 - `src/modules/*`: Módulos de negocio (Customers, Products, Orders, etc.).
 - `src/common/*`: Filtros globales, Prisma service, DTOs compartidos.
+- `src/modules/mail`: Módulo de gestión de correos con plantillas HTML.
 - `prisma/schema.prisma`: Modelo de datos y relaciones.
 - `prisma/seed.ts`: Datos iniciales para el catálogo.

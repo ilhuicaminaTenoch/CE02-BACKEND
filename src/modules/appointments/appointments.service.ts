@@ -3,16 +3,63 @@ import { PrismaService } from '@/common/prisma/prisma.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AppointmentQueryDto } from './dto/appointment-query.dto';
 import { Prisma } from '@prisma/client';
+import { MailService } from '../mail/mail.service';
+import { ConfigService } from '@nestjs/config';
+
 
 @Injectable()
 export class AppointmentsService {
-    constructor(private prisma: PrismaService) { }
+    constructor(
+        private prisma: PrismaService,
+        private mailService: MailService,
+        private configService: ConfigService,
+    ) { }
 
     async create(createAppointmentDto: CreateAppointmentDto) {
-        return this.prisma.appointment.create({
+        const appointment = await this.prisma.appointment.create({
             data: createAppointmentDto as unknown as Prisma.AppointmentCreateInput,
-            include: { customer: true, lead: true },
+            include: {
+                customer: true,
+                lead: true,
+            },
         });
+
+        // Trigger emails in background (fail-safe)
+        this.sendEmails(appointment).catch(err => {
+            console.error('Error in sendEmails background task:', err);
+        });
+
+        return appointment;
+    }
+
+    private async sendEmails(appointment: any) {
+        const publicUrl = this.configService.get<string>('APP_PUBLIC_URL', 'http://localhost:3000');
+
+        const payload = {
+            appointmentId: appointment.id,
+            customerName: `${appointment.customer.name} ${appointment.customer.lastName}`,
+            customerEmail: appointment.customer.email,
+            customerPhone: appointment.customer.phone,
+            serviceType: appointment.lead?.serviceType || 'General',
+            dateTimeISO: appointment.date.toISOString(),
+            dateTimeFormatted: new Date(appointment.date).toLocaleString('es-MX', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            }),
+            modality: appointment.mode,
+            address: 'Consulte el panel técnico', // Could be expanded if addresses are joined
+            notes: appointment.comments,
+            publicUrl: `${publicUrl}/appointments/${appointment.id}`,
+        };
+
+        // 1. To Customer
+        await this.mailService.sendAppointmentConfirmationToCustomer(payload);
+
+        // 2. To Technician
+        await this.mailService.sendNewAppointmentNotificationToTechnician(payload);
     }
 
     async findAll(query: AppointmentQueryDto) {

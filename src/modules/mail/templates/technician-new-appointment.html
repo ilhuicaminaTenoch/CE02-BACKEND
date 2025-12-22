@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #fff4f4;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: #d9534f;
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .footer {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .card {
+            border: 1px solid #ffcccc;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 20px;
+            background-color: #fff9f9;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #d9534f;
+            width: 140px;
+            display: inline-block;
+        }
+
+        .value {
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Seguridad Integral</h1>
+            <p>Nueva Cita Asignada</p>
+        </div>
+        <div class="content">
+            <p>Se ha registrado una nueva cita que requiere tu atención:</p>
+
+            <div class="card">
+                <div class="value"><span class="label">ID de Cita:</span> {{appointmentId}}</div>
+                <div class="value"><span class="label">Cliente:</span> {{customerName}}</div>
+                <div class="value"><span class="label">Contacto:</span> {{customerPhone}}</div>
+                <div class="value"><span class="label">Servicio:</span> {{serviceType}}</div>
+                <div class="value"><span class="label">Fecha y Hora:</span> {{dateTimeFormatted}}</div>
+                <div class="value"><span class="label">Modalidad:</span> {{modality}}</div>
+                <div class="value"><span class="label">Dirección:</span> {{address}}</div>
+                {{#if notes}}
+                <div class="value"><span class="label">Notas:</span> {{notes}}</div>
+                {{/if}}
+            </div>
+
+            <p>Por favor revisa los detalles en el panel de control.</p>
+        </div>
+        <div class="footer">
+            &copy; 2025 Seguridad Integral - Sistema de Gestión Técnica.<br>
+            Notificación Automática del Sistema.
+        </div>
+    </div>
+</body>
+
+</html>
