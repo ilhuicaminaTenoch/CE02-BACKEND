@@ -30,6 +30,12 @@ __decorate([
     __metadata("design:type", String)
 ], LeadQueryDto.prototype, "urgency", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ enum: client_1.PropertyType }),
+    (0, class_validator_1.IsEnum)(client_1.PropertyType),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LeadQueryDto.prototype, "propertyType", void 0);
+__decorate([
     (0, swagger_1.ApiPropertyOptional)(),
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsOptional)(),

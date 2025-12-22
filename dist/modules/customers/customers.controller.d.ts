@@ -74,7 +74,7 @@ export declare class CustomersController {
             updatedAt: Date;
             customerId: string;
             serviceType: import(".prisma/client").$Enums.ServiceType;
-            budgetEstimated: number | null;
+            budgetEstimated: string | null;
             urgency: import(".prisma/client").$Enums.Urgency;
             propertyType: import(".prisma/client").$Enums.PropertyType;
             numCameras: number | null;

@@ -2,7 +2,7 @@ import { ServiceType, Urgency, PropertyType } from '@prisma/client';
 export declare class CreateLeadDto {
     serviceType: ServiceType;
     description: string;
-    budgetEstimated?: number;
+    budgetEstimated?: string;
     urgency?: Urgency;
     propertyType: PropertyType;
     numCameras?: number;

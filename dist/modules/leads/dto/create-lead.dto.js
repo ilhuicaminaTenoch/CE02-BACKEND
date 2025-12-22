@@ -29,10 +29,10 @@ __decorate([
     __metadata("design:type", String)
 ], CreateLeadDto.prototype, "description", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 5000.0 }),
-    (0, class_validator_1.IsNumber)(),
+    (0, swagger_1.ApiPropertyOptional)({ example: '$5000-$15000' }),
+    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], CreateLeadDto.prototype, "budgetEstimated", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ enum: client_1.Urgency, default: client_1.Urgency.MEDIUM }),

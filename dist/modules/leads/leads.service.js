@@ -23,11 +23,12 @@ let LeadsService = class LeadsService {
         });
     }
     async findAll(query) {
-        const { page, limit, serviceType, urgency, customerId, search } = query;
+        const { page, limit, serviceType, urgency, propertyType, customerId, search } = query;
         const skip = (page - 1) * limit;
         const where = {
             ...(serviceType && { serviceType }),
             ...(urgency && { urgency }),
+            ...(propertyType && { propertyType }),
             ...(customerId && { customerId }),
             ...(search && {
                 description: { contains: search, mode: 'insensitive' },
@@ -62,7 +63,7 @@ let LeadsService = class LeadsService {
     async update(id, data) {
         return this.prisma.lead.update({
             where: { id },
-            data,
+            data: data,
         });
     }
 };
