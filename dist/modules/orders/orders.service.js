@@ -147,7 +147,7 @@ let OrdersService = class OrdersService {
     async findOne(id) {
         return this.prisma.order.findUnique({
             where: { id },
-            include: { customer: true, items: true, appointments: true },
+            include: { customer: true, items: true },
         });
     }
     async recalculateTotals(orderId, tx) {

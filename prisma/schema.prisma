@@ -43,6 +43,11 @@ enum AppointmentStatus {
   CANCELLED
 }
 
+enum AppointmentMode {
+  REMOTE
+  IN_PERSON
+}
+
 enum ContactMethod {
   WHATSAPP
   CALL
@@ -112,7 +117,6 @@ model Order {
   customer     Customer      @relation(fields: [customerId], references: [id])
   customerId   String
   items        OrderItem[]
-  appointments Appointment[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
@@ -141,8 +145,8 @@ model Appointment {
   customerId String
   lead       Lead?             @relation(fields: [leadId], references: [id])
   leadId     String?
-  order      Order?            @relation(fields: [orderId], references: [id])
-  orderId    String?
+  mode       AppointmentMode   @default(IN_PERSON)
+  comments   String?
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
 

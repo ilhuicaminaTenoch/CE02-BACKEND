@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Query, Patch, NotFoundException } f
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
-import { PaginationDto } from '@/common/dto/pagination.dto';
+import { AppointmentQueryDto } from './dto/appointment-query.dto';
 
 @ApiTags('Appointments')
 @Controller('appointments')
@@ -16,8 +16,8 @@ export class AppointmentsController {
     }
 
     @Get()
-    @ApiOperation({ summary: 'List appointments with pagination' })
-    findAll(@Query() query: PaginationDto) {
+    @ApiOperation({ summary: 'List appointments with filtering and pagination' })
+    findAll(@Query() query: AppointmentQueryDto) {
         return this.appointmentsService.findAll(query);
     }
 

@@ -78,8 +78,9 @@ export declare class LeadsService {
             customerId: string;
             status: import(".prisma/client").$Enums.AppointmentStatus;
             date: Date;
+            mode: import(".prisma/client").$Enums.AppointmentMode;
+            comments: string | null;
             leadId: string | null;
-            orderId: string | null;
         }[];
     } & {
         description: string;

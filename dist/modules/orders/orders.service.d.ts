@@ -11,11 +11,11 @@ export declare class OrdersService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            orderId: string;
             productId: string;
             quantity: number;
             unitPrice: number;
             lineTotal: number;
+            orderId: string;
         }[];
     } & {
         id: string;
@@ -34,11 +34,11 @@ export declare class OrdersService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            orderId: string;
             productId: string;
             quantity: number;
             unitPrice: number;
             lineTotal: number;
+            orderId: string;
         }[];
     } & {
         id: string;
@@ -65,11 +65,11 @@ export declare class OrdersService {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                orderId: string;
                 productId: string;
                 quantity: number;
                 unitPrice: number;
                 lineTotal: number;
+                orderId: string;
             }[];
         } & {
             id: string;
@@ -102,21 +102,11 @@ export declare class OrdersService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            orderId: string;
             productId: string;
             quantity: number;
             unitPrice: number;
             lineTotal: number;
-        }[];
-        appointments: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            customerId: string;
-            status: import(".prisma/client").$Enums.AppointmentStatus;
-            date: Date;
-            leadId: string | null;
-            orderId: string | null;
+            orderId: string;
         }[];
     } & {
         id: string;

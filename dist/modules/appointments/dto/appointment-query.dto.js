@@ -9,47 +9,36 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateAppointmentDto = void 0;
+exports.AppointmentQueryDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const client_1 = require("@prisma/client");
 const class_validator_1 = require("class-validator");
-class CreateAppointmentDto {
+const pagination_dto_1 = require("../../../common/dto/pagination.dto");
+class AppointmentQueryDto extends pagination_dto_1.PaginationDto {
 }
-exports.CreateAppointmentDto = CreateAppointmentDto;
+exports.AppointmentQueryDto = AppointmentQueryDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: '2025-12-24T10:00:00Z' }),
-    (0, class_validator_1.IsDateString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CreateAppointmentDto.prototype, "date", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ enum: client_1.AppointmentStatus, default: client_1.AppointmentStatus.SCHEDULED }),
+    (0, swagger_1.ApiPropertyOptional)({ enum: client_1.AppointmentStatus }),
     (0, class_validator_1.IsEnum)(client_1.AppointmentStatus),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], CreateAppointmentDto.prototype, "status", void 0);
+], AppointmentQueryDto.prototype, "status", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ enum: client_1.AppointmentMode, default: client_1.AppointmentMode.IN_PERSON }),
+    (0, swagger_1.ApiPropertyOptional)({ enum: client_1.AppointmentMode }),
     (0, class_validator_1.IsEnum)(client_1.AppointmentMode),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], CreateAppointmentDto.prototype, "mode", void 0);
+], AppointmentQueryDto.prototype, "mode", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'Cliente solicita revisión de cámaras en patio.' }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateAppointmentDto.prototype, "comments", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ example: 'uuid-of-customer' }),
-    (0, class_validator_1.IsUUID)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CreateAppointmentDto.prototype, "customerId", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'uuid-of-lead' }),
+    (0, swagger_1.ApiPropertyOptional)(),
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], CreateAppointmentDto.prototype, "leadId", void 0);
-//# sourceMappingURL=create-appointment.dto.js.map
+], AppointmentQueryDto.prototype, "customerId", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsUUID)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], AppointmentQueryDto.prototype, "leadId", void 0);
+//# sourceMappingURL=appointment-query.dto.js.map

@@ -162,7 +162,7 @@ export class OrdersService {
     async findOne(id: string) {
         return this.prisma.order.findUnique({
             where: { id },
-            include: { customer: true, items: true, appointments: true },
+            include: { customer: true, items: true },
         });
     }
 

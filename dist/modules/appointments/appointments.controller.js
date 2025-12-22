@@ -17,7 +17,7 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const appointments_service_1 = require("./appointments.service");
 const create_appointment_dto_1 = require("./dto/create-appointment.dto");
-const pagination_dto_1 = require("../../common/dto/pagination.dto");
+const appointment_query_dto_1 = require("./dto/appointment-query.dto");
 let AppointmentsController = class AppointmentsController {
     constructor(appointmentsService) {
         this.appointmentsService = appointmentsService;
@@ -49,10 +49,10 @@ __decorate([
 ], AppointmentsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'List appointments with pagination' }),
+    (0, swagger_1.ApiOperation)({ summary: 'List appointments with filtering and pagination' }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [pagination_dto_1.PaginationDto]),
+    __metadata("design:paramtypes", [appointment_query_dto_1.AppointmentQueryDto]),
     __metadata("design:returntype", void 0)
 ], AppointmentsController.prototype, "findAll", null);
 __decorate([

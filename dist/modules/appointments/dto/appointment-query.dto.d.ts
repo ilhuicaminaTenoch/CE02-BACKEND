@@ -1,9 +1,8 @@
 import { AppointmentStatus, AppointmentMode } from '@prisma/client';
-export declare class CreateAppointmentDto {
-    date: string;
+import { PaginationDto } from '@/common/dto/pagination.dto';
+export declare class AppointmentQueryDto extends PaginationDto {
     status?: AppointmentStatus;
     mode?: AppointmentMode;
-    comments?: string;
-    customerId: string;
+    customerId?: string;
     leadId?: string;
 }

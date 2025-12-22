@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/common/prisma/prisma.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
-import { PaginationDto } from '@/common/dto/pagination.dto';
+import { AppointmentQueryDto } from './dto/appointment-query.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AppointmentsService {
@@ -9,23 +10,35 @@ export class AppointmentsService {
 
     async create(createAppointmentDto: CreateAppointmentDto) {
         return this.prisma.appointment.create({
-            data: createAppointmentDto,
-            include: { customer: true, lead: true, order: true },
+            data: createAppointmentDto as unknown as Prisma.AppointmentCreateInput,
+            include: { customer: true, lead: true },
         });
     }
 
-    async findAll(query: PaginationDto) {
-        const { page, limit, search } = query;
+    async findAll(query: AppointmentQueryDto) {
+        const { page, limit, status, mode, customerId, leadId, search } = query;
         const skip = (page - 1) * limit;
+
+        const where: Prisma.AppointmentWhereInput = {
+            ...(status && { status }),
+            ...(mode && { mode }),
+            ...(customerId && { customerId }),
+            ...(leadId && { leadId }),
+            // Search if needed (e.g. in comments)
+            ...(search && {
+                comments: { contains: search, mode: 'insensitive' },
+            }),
+        };
 
         const [items, total] = await Promise.all([
             this.prisma.appointment.findMany({
+                where,
                 skip,
                 take: limit,
-                include: { customer: true, lead: true, order: true },
+                include: { customer: true, lead: true },
                 orderBy: { date: 'asc' },
             }),
-            this.prisma.appointment.count(),
+            this.prisma.appointment.count({ where }),
         ]);
 
         return {
@@ -42,7 +55,7 @@ export class AppointmentsService {
     async findOne(id: string) {
         return this.prisma.appointment.findUnique({
             where: { id },
-            include: { customer: true, lead: true, order: true },
+            include: { customer: true, lead: true },
         });
     }
 

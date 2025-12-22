@@ -19,20 +19,30 @@ let AppointmentsService = class AppointmentsService {
     async create(createAppointmentDto) {
         return this.prisma.appointment.create({
             data: createAppointmentDto,
-            include: { customer: true, lead: true, order: true },
+            include: { customer: true, lead: true },
         });
     }
     async findAll(query) {
-        const { page, limit, search } = query;
+        const { page, limit, status, mode, customerId, leadId, search } = query;
         const skip = (page - 1) * limit;
+        const where = {
+            ...(status && { status }),
+            ...(mode && { mode }),
+            ...(customerId && { customerId }),
+            ...(leadId && { leadId }),
+            ...(search && {
+                comments: { contains: search, mode: 'insensitive' },
+            }),
+        };
         const [items, total] = await Promise.all([
             this.prisma.appointment.findMany({
+                where,
                 skip,
                 take: limit,
-                include: { customer: true, lead: true, order: true },
+                include: { customer: true, lead: true },
                 orderBy: { date: 'asc' },
             }),
-            this.prisma.appointment.count(),
+            this.prisma.appointment.count({ where }),
         ]);
         return {
             items,
@@ -47,7 +57,7 @@ let AppointmentsService = class AppointmentsService {
     async findOne(id) {
         return this.prisma.appointment.findUnique({
             where: { id },
-            include: { customer: true, lead: true, order: true },
+            include: { customer: true, lead: true },
         });
     }
     async update(id, data) {
