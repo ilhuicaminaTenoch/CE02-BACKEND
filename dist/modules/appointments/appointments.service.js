@@ -24,7 +24,14 @@ let AppointmentsService = class AppointmentsService {
         const appointment = await this.prisma.appointment.create({
             data: createAppointmentDto,
             include: {
-                customer: true,
+                customer: {
+                    include: {
+                        addresses: {
+                            orderBy: { createdAt: 'desc' },
+                            take: 1
+                        }
+                    }
+                },
                 lead: true,
             },
         });
@@ -35,6 +42,14 @@ let AppointmentsService = class AppointmentsService {
     }
     async sendEmails(appointment) {
         const publicUrl = this.configService.get('APP_PUBLIC_URL', 'http://localhost:3000');
+        let displayAddress = 'Consulte el panel técnico';
+        if (appointment.mode === 'REMOTE') {
+            displayAddress = 'N/A (Cita Remota)';
+        }
+        else if (appointment.customer.addresses && appointment.customer.addresses.length > 0) {
+            const addr = appointment.customer.addresses[0];
+            displayAddress = `${addr.street} ${addr.noExt}${addr.noInt ? ' Int. ' + addr.noInt : ''}, ${addr.settlement}, ${addr.city}, ${addr.state}`;
+        }
         const payload = {
             appointmentId: appointment.id,
             customerName: `${appointment.customer.name} ${appointment.customer.lastName}`,
@@ -49,8 +64,8 @@ let AppointmentsService = class AppointmentsService {
                 hour: '2-digit',
                 minute: '2-digit',
             }),
-            modality: appointment.mode,
-            address: 'Consulte el panel técnico',
+            modality: appointment.mode === 'REMOTE' ? 'REMOTA' : 'PRESENCIAL',
+            address: displayAddress,
             notes: appointment.comments,
             publicUrl: `${publicUrl}/appointments/${appointment.id}`,
         };
