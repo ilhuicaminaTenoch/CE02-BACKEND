@@ -106,7 +106,7 @@ export class MailService {
 
             await this.mailerService.sendMail({
                 to: customer.email,
-                subject: `Cotización #${payload.orderId} - Seguridad Integral`,
+                subject: `Cotización #${payload.orderId} - CEO2`,
                 template: './quote',
                 context: payload,
             });

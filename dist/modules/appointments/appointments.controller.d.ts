@@ -8,7 +8,9 @@ export declare class AppointmentsController {
         customer: {
             addresses: {
                 id: string;
+                customerId: string;
                 createdAt: Date;
+                updatedAt: Date;
                 street: string;
                 noInt: string;
                 noExt: string;
@@ -17,8 +19,6 @@ export declare class AppointmentsController {
                 state: string;
                 zipCode: string | null;
                 references: string | null;
-                customerId: string;
-                updatedAt: Date;
             }[];
         } & {
             id: string;
@@ -32,8 +32,8 @@ export declare class AppointmentsController {
         };
         lead: {
             id: string;
-            createdAt: Date;
             customerId: string;
+            createdAt: Date;
             updatedAt: Date;
             serviceType: import(".prisma/client").$Enums.ServiceType;
             description: string;
@@ -45,11 +45,11 @@ export declare class AppointmentsController {
         };
     } & {
         id: string;
-        createdAt: Date;
+        status: import(".prisma/client").$Enums.AppointmentStatus;
         customerId: string;
+        createdAt: Date;
         updatedAt: Date;
         date: Date;
-        status: import(".prisma/client").$Enums.AppointmentStatus;
         mode: import(".prisma/client").$Enums.AppointmentMode;
         comments: string | null;
         leadId: string | null;
@@ -68,8 +68,8 @@ export declare class AppointmentsController {
             };
             lead: {
                 id: string;
-                createdAt: Date;
                 customerId: string;
+                createdAt: Date;
                 updatedAt: Date;
                 serviceType: import(".prisma/client").$Enums.ServiceType;
                 description: string;
@@ -81,11 +81,11 @@ export declare class AppointmentsController {
             };
         } & {
             id: string;
-            createdAt: Date;
+            status: import(".prisma/client").$Enums.AppointmentStatus;
             customerId: string;
+            createdAt: Date;
             updatedAt: Date;
             date: Date;
-            status: import(".prisma/client").$Enums.AppointmentStatus;
             mode: import(".prisma/client").$Enums.AppointmentMode;
             comments: string | null;
             leadId: string | null;
@@ -110,8 +110,8 @@ export declare class AppointmentsController {
         };
         lead: {
             id: string;
-            createdAt: Date;
             customerId: string;
+            createdAt: Date;
             updatedAt: Date;
             serviceType: import(".prisma/client").$Enums.ServiceType;
             description: string;
@@ -123,22 +123,22 @@ export declare class AppointmentsController {
         };
     } & {
         id: string;
-        createdAt: Date;
+        status: import(".prisma/client").$Enums.AppointmentStatus;
         customerId: string;
+        createdAt: Date;
         updatedAt: Date;
         date: Date;
-        status: import(".prisma/client").$Enums.AppointmentStatus;
         mode: import(".prisma/client").$Enums.AppointmentMode;
         comments: string | null;
         leadId: string | null;
     }>;
     update(id: string, data: Partial<CreateAppointmentDto>): Promise<{
         id: string;
-        createdAt: Date;
+        status: import(".prisma/client").$Enums.AppointmentStatus;
         customerId: string;
+        createdAt: Date;
         updatedAt: Date;
         date: Date;
-        status: import(".prisma/client").$Enums.AppointmentStatus;
         mode: import(".prisma/client").$Enums.AppointmentMode;
         comments: string | null;
         leadId: string | null;

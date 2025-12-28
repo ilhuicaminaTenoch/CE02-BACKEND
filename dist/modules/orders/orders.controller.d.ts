@@ -17,12 +17,12 @@ export declare class OrdersController {
         }[];
     } & {
         id: string;
-        createdAt: Date;
-        subtotal: number;
-        customerId: string;
-        updatedAt: Date;
         status: import(".prisma/client").$Enums.OrderStatus;
+        subtotal: number;
         total: number;
+        customerId: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     addItem(addItemDto: AddItemDto): Promise<any>;
     updateItem(itemId: string, updateItemDto: UpdateItemDto): Promise<any>;
@@ -50,12 +50,12 @@ export declare class OrdersController {
         }[];
     } & {
         id: string;
-        createdAt: Date;
-        subtotal: number;
-        customerId: string;
-        updatedAt: Date;
         status: import(".prisma/client").$Enums.OrderStatus;
+        subtotal: number;
         total: number;
+        customerId: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     findAll(query: OrderQueryDto): Promise<{
         items: ({
@@ -81,12 +81,12 @@ export declare class OrdersController {
             }[];
         } & {
             id: string;
-            createdAt: Date;
-            subtotal: number;
-            customerId: string;
-            updatedAt: Date;
             status: import(".prisma/client").$Enums.OrderStatus;
+            subtotal: number;
             total: number;
+            customerId: string;
+            createdAt: Date;
+            updatedAt: Date;
         })[];
         meta: {
             total: number;
@@ -118,11 +118,11 @@ export declare class OrdersController {
         }[];
     } & {
         id: string;
-        createdAt: Date;
-        subtotal: number;
-        customerId: string;
-        updatedAt: Date;
         status: import(".prisma/client").$Enums.OrderStatus;
+        subtotal: number;
         total: number;
+        customerId: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }
