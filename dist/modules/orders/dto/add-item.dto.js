@@ -17,7 +17,6 @@ class AddItemDto {
 exports.AddItemDto = AddItemDto;
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'uuid-of-product' }),
-    (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], AddItemDto.prototype, "productId", void 0);

@@ -1,0 +1,258 @@
+:root {
+  --primary: #2563eb;
+  --primary-soft: #eff4ff;
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  --border-soft: #e5e7eb;
+  --bg: #f9fafb;
+  --danger: #b91c1c;
+  --radius: 8px;
+  --shadow-soft: 0 10px 25px rgba(15, 23, 42, 0.08);
+  --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background: var(--bg);
+  color: var(--text-main);
+  padding: 32px;
+}
+
+.quote {
+  max-width: 700px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 0;     
+  box-shadow: none;      
+  padding: 24px;
+}
+
+/* HEADER */
+
+.quote__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--border-soft);
+}
+
+.quote__company {
+  display: flex;
+  gap: 16px;
+  flex: 2;
+}
+
+.quote__logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  border: 2px solid var(--primary-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--primary);
+}
+
+.quote__company-info h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.quote__company-info p {
+  margin: 2px 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.quote__meta {
+  flex: 1;
+  text-align: right;
+  font-size: 13px;
+}
+
+.quote__meta h2 {
+  margin: 0 0 8px;
+  letter-spacing: 0.12em;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.quote__meta .label {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* CLIENTE Y CONDICIONES */
+
+.quote__to {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  margin: 24px 0;
+  font-size: 13px;
+}
+
+.quote__to h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.quote__to p {
+  margin: 2px 0;
+}
+
+/* TABLA DE ITEMS */
+
+.quote__items table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.quote__items thead {
+  background: var(--primary-soft);
+}
+
+.quote__items th,
+.quote__items td {
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.quote__items th {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.quote__items tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.quote__items td:nth-child(2),
+.quote__items td:nth-child(3),
+.quote__items td:nth-child(4),
+.quote__items td:nth-child(5) {
+  white-space: nowrap;
+}
+
+/* TOTALES Y NOTAS */
+
+.quote__totals {
+  display: flex;
+  gap: 32px;
+  margin-top: 24px;
+}
+
+.quote__notes {
+  flex: 2;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.quote__notes h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--text-main);
+}
+
+.quote__amounts {
+  flex: 1;
+  font-size: 13px;
+  border-radius: 12px;
+  border: 1px solid var(--border-soft);
+  padding: 12px 16px;
+  background: #fefefe;
+}
+
+.amount-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.amount-row--total {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-soft);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* FOOTER */
+
+.quote__footer {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-soft);
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.quote__signature {
+  text-align: right;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+  body {
+    padding: 16px;
+  }
+
+  .quote {
+    padding: 24px 16px;
+  }
+
+  .quote__header,
+  .quote__to,
+  .quote__totals,
+  .quote__footer {
+    flex-direction: column;
+    text-align: left;
+  }
+
+  .quote__meta {
+    text-align: left;
+  }
+
+  .quote__signature {
+    text-align: left;
+  }
+}
+
+/* IMPRESIÓN */
+
+@media print {
+  body {
+    background: #fff;
+    padding: 0;
+  }
+
+  .quote {
+    box-shadow: none;
+    border-radius: 0;
+    max-width: 100%;
+  }
+}

@@ -14,10 +14,12 @@ const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
 const prisma_service_1 = require("../../common/prisma/prisma.service");
 const syscom_service_1 = require("../syscom/syscom.service");
+const mail_service_1 = require("../mail/mail.service");
 let OrdersService = class OrdersService {
-    constructor(prisma, syscom) {
+    constructor(prisma, syscom, mailService) {
         this.prisma = prisma;
         this.syscom = syscom;
+        this.mailService = mailService;
     }
     async getOrCreateCart(customerId) {
         let cart = await this.prisma.order.findFirst({
@@ -111,11 +113,36 @@ let OrdersService = class OrdersService {
         if (!cart || cart.items.length === 0) {
             throw new common_1.BadRequestException('Cart is empty or not found');
         }
-        return this.prisma.order.update({
+        const order = await this.prisma.order.update({
             where: { id: cart.id },
             data: { status: client_1.OrderStatus.SUBMITTED },
-            include: { items: true },
+            include: {
+                items: true,
+                customer: true,
+            },
         });
+        this.enrichAndSendEmail(order).catch(err => {
+            console.error('Failed to trigger email notification:', err);
+        });
+        return order;
+    }
+    async enrichAndSendEmail(order) {
+        try {
+            const enrichedItems = await Promise.all(order.items.map(async (item) => {
+                const product = await this.syscom.getProduct(item.productId);
+                return {
+                    ...item,
+                    productTitle: product?.titulo || `SKU: ${item.productId}`,
+                };
+            }));
+            await this.mailService.sendOrderQuoteEmail(order.id, {
+                ...order,
+                items: enrichedItems,
+            });
+        }
+        catch (error) {
+            console.error('Error in enrichAndSendEmail:', error);
+        }
     }
     async findAll(query) {
         const { page, limit, status, customerId } = query;
@@ -165,6 +192,7 @@ exports.OrdersService = OrdersService;
 exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        syscom_service_1.SyscomService])
+        syscom_service_1.SyscomService,
+        mail_service_1.MailService])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map

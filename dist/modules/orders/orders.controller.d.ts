@@ -9,73 +9,83 @@ export declare class OrdersController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            productId: string;
             quantity: number;
             unitPrice: number;
             lineTotal: number;
+            productId: string;
             orderId: string;
         }[];
     } & {
         id: string;
         createdAt: Date;
-        updatedAt: Date;
-        customerId: string;
-        status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
+        customerId: string;
+        updatedAt: Date;
+        status: import(".prisma/client").$Enums.OrderStatus;
         total: number;
     }>;
     addItem(addItemDto: AddItemDto): Promise<any>;
     updateItem(itemId: string, updateItemDto: UpdateItemDto): Promise<any>;
     removeItem(itemId: string): Promise<any>;
     submit(customerId: string): Promise<{
+        customer: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            email: string;
+            lastName: string;
+            phone: string;
+            contactMethod: import(".prisma/client").$Enums.ContactMethod;
+        };
         items: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            productId: string;
             quantity: number;
             unitPrice: number;
             lineTotal: number;
+            productId: string;
             orderId: string;
         }[];
     } & {
         id: string;
         createdAt: Date;
-        updatedAt: Date;
-        customerId: string;
-        status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
+        customerId: string;
+        updatedAt: Date;
+        status: import(".prisma/client").$Enums.OrderStatus;
         total: number;
     }>;
     findAll(query: OrderQueryDto): Promise<{
         items: ({
             customer: {
-                name: string;
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
                 email: string;
                 lastName: string;
                 phone: string;
                 contactMethod: import(".prisma/client").$Enums.ContactMethod;
-                createdAt: Date;
-                updatedAt: Date;
             };
             items: {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                productId: string;
                 quantity: number;
                 unitPrice: number;
                 lineTotal: number;
+                productId: string;
                 orderId: string;
             }[];
         } & {
             id: string;
             createdAt: Date;
-            updatedAt: Date;
-            customerId: string;
-            status: import(".prisma/client").$Enums.OrderStatus;
             subtotal: number;
+            customerId: string;
+            updatedAt: Date;
+            status: import(".prisma/client").$Enums.OrderStatus;
             total: number;
         })[];
         meta: {
@@ -87,32 +97,32 @@ export declare class OrdersController {
     }>;
     findOne(id: string): Promise<{
         customer: {
-            name: string;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
             email: string;
             lastName: string;
             phone: string;
             contactMethod: import(".prisma/client").$Enums.ContactMethod;
-            createdAt: Date;
-            updatedAt: Date;
         };
         items: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            productId: string;
             quantity: number;
             unitPrice: number;
             lineTotal: number;
+            productId: string;
             orderId: string;
         }[];
     } & {
         id: string;
         createdAt: Date;
-        updatedAt: Date;
-        customerId: string;
-        status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
+        customerId: string;
+        updatedAt: Date;
+        status: import(".prisma/client").$Enums.OrderStatus;
         total: number;
     }>;
 }

@@ -3,7 +3,6 @@ import { IsInt, IsNotEmpty, IsUUID, Min } from 'class-validator';
 
 export class AddItemDto {
     @ApiProperty({ example: 'uuid-of-product' })
-    @IsUUID()
     @IsNotEmpty()
     productId: string;
 

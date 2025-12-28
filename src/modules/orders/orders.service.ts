@@ -5,11 +5,15 @@ import { AddItemDto, UpdateItemDto } from './dto/add-item.dto';
 import { OrderQueryDto } from './dto/order-query.dto';
 import { SyscomService } from '../syscom/syscom.service';
 
+
+import { MailService } from '../mail/mail.service';
+
 @Injectable()
 export class OrdersService {
     constructor(
         private prisma: PrismaService,
         private syscom: SyscomService,
+        private mailService: MailService,
     ) { }
 
     async getOrCreateCart(customerId: string) {
@@ -121,11 +125,44 @@ export class OrdersService {
             throw new BadRequestException('Cart is empty or not found');
         }
 
-        return this.prisma.order.update({
+        const order = await this.prisma.order.update({
             where: { id: cart.id },
             data: { status: OrderStatus.SUBMITTED },
-            include: { items: true },
+            include: {
+                items: true,
+                customer: true,
+            },
         });
+
+        // Background process to enrich and send email
+        this.enrichAndSendEmail(order).catch(err => {
+            console.error('Failed to trigger email notification:', err);
+        });
+
+        return order;
+    }
+
+    private async enrichAndSendEmail(order: any) {
+        try {
+            // Enrich items with product titles from Syscom
+            const enrichedItems = await Promise.all(
+                order.items.map(async (item) => {
+                    const product = await this.syscom.getProduct(item.productId);
+                    return {
+                        ...item,
+                        productTitle: product?.titulo || `SKU: ${item.productId}`,
+                    };
+                })
+            );
+
+            await this.mailService.sendOrderQuoteEmail(order.id, {
+                ...order,
+                items: enrichedItems,
+            });
+        } catch (error) {
+            // Silently log error as requested
+            console.error('Error in enrichAndSendEmail:', error);
+        }
     }
 
     async findAll(query: OrderQueryDto) {

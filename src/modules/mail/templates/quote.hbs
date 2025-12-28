@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Cotización #{{orderId}}</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-soft: #eff4ff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border-soft: #e5e7eb;
+            --bg: #f9fafb;
+            --danger: #b91c1c;
+            --radius: 8px;
+            --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f9fafb;
+            color: #111827;
+            padding: 32px;
+            margin: 0;
+        }
+
+        .quote {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 24px;
+        }
+
+        .quote__header {
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .quote__company {
+            display: flex;
+            gap: 16px;
+            flex: 2;
+        }
+
+        .quote__logo {
+            padding: 8px;
+            border-radius: 12px;
+            border: 2px solid #eff4ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .quote__logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .quote__company-info h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .quote__company-info p {
+            margin: 2px 0;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .quote__meta {
+            flex: 1;
+            text-align: right;
+            font-size: 13px;
+        }
+
+        .quote__meta h2 {
+            margin: 0 0 8px;
+            letter-spacing: 0.12em;
+            font-size: 14px;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .quote__meta .label {
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .quote__to {
+            display: flex;
+            justify-content: space-between;
+            gap: 32px;
+            margin: 24px 0;
+            font-size: 13px;
+        }
+
+        .quote__to h3 {
+            margin: 0 0 8px;
+            font-size: 14px;
+        }
+
+        .quote__to p {
+            margin: 2px 0;
+        }
+
+        .quote__items table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .quote__items thead {
+            background: #eff4ff;
+        }
+
+        .quote__items th,
+        .quote__items td {
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .quote__items th {
+            font-weight: 600;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .quote__totals {
+            display: flex;
+            gap: 32px;
+            margin-top: 24px;
+        }
+
+        .quote__notes {
+            flex: 2;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .quote__notes h3 {
+            margin: 0 0 8px;
+            font-size: 13px;
+            color: #111827;
+        }
+
+        .quote__amounts {
+            flex: 1;
+            font-size: 13px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 12px 16px;
+            background: #fefefe;
+        }
+
+        .amount-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .amount-row--total {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #e5e7eb;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .quote__footer {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .quote__signature {
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="quote">
+        <header class="quote__header">
+            <div class="quote__company">
+                <div class="quote__logo">
+                    <img src="{{logo}}" alt="Logo" />
+                </div>
+                <div class="quote__company-info">
+                    <h1>CE02</h1>
+                    <p>Cerro de las palomas 115-A, Dr. Jorge Jimenez Cantú, Tlalnepantla de Baz, México.</p>
+                    <p>Tel: +52 55 2730 4665 · irueda@ceo2.com</p>
+                    <p>Sitio web: www.ceo2.mx</p>
+                </div>
+            </div>
+            <div class="quote__meta">
+                <h2>COTIZACIÓN</h2>
+                <p><span class="label">Folio:</span> {{orderId}}</p>
+                <p><span class="label">Fecha:</span> {{date}}</p>
+                <p><span class="label">Válida hasta:</span> {{validUntil}}</p>
+            </div>
+        </header>
+
+        <section class="quote__to">
+            <div>
+                <h3>Información del Cliente</h3>
+                <p><strong>Cliente:</strong> {{customerFullname}}</p>
+                <p><strong>Contacto:</strong> {{customerName}}</p>
+                <p><strong>Correo:</strong> {{customerEmail}}</p>
+                <p><strong>Teléfono:</strong> {{customerPhone}}</p>
+            </div>
+            <div>
+                <h3>Condiciones generales</h3>
+                <p>Forma de pago: Transferencia bancaria</p>
+                <p>Tiempo de entrega: 5–7 días hábiles</p>
+                <p>Moneda: MXN</p>
+            </div>
+        </section>
+
+        <section class="quote__items">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concepto</th>
+                        <th>Cantidad</th>
+                        <th>Precio unitario</th>
+                        <th>Descuento</th>
+                        <th>Importe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each items}}
+                    <tr>
+                        <td>{{name}}</td>
+                        <td>{{quantity}}</td>
+                        <td>{{unitPriceFormatted}}</td>
+                        <td>0%</td>
+                        <td>{{lineTotalFormatted}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="quote__totals">
+            <div class="quote__notes">
+                <h3>Notas</h3>
+                <p>
+                    • Los precios incluyen IVA.<br />
+                    • La cotización puede modificarse en caso de cambios en el alcance.<br />
+                    • Para iniciar el proyecto se requiere un anticipo del 50%.
+                </p>
+            </div>
+            <div class="quote__amounts">
+                <div class="amount-row">
+                    <span>Subtotal:</span>
+                    <span>{{subtotalFormatted}}</span>
+                </div>
+                <div class="amount-row">
+                    <span>IVA (16%):</span>
+                    <span>{{taxFormatted}}</span>
+                </div>
+                <div class="amount-row amount-row--total">
+                    <span>Total:</span>
+                    <span>{{totalFormatted}} MXN</span>
+                </div>
+            </div>
+        </section>
+
+        <footer class="quote__footer">
+            <div>
+                <p><strong>Cuenta bancaria:</strong></p>
+                <p>Banco Ejemplo · CLABE: 000 000 0000 000000 · Beneficiario: Nombre de la Empresa</p>
+            </div>
+            <div class="quote__signature">
+                <p>______________________________</p>
+                <p><strong>Nombre del responsable</strong></p>
+                <p>Puesto / Área</p>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>

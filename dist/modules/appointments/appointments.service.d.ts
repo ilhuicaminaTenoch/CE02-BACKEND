@@ -12,35 +12,35 @@ export declare class AppointmentsService {
         customer: {
             addresses: {
                 id: string;
+                createdAt: Date;
                 street: string;
-                city: string;
-                state: string;
-                zipCode: string | null;
                 noInt: string;
                 noExt: string;
                 settlement: string;
-                createdAt: Date;
-                updatedAt: Date;
+                city: string;
+                state: string;
+                zipCode: string | null;
                 references: string | null;
                 customerId: string;
+                updatedAt: Date;
             }[];
         } & {
-            name: string;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
             email: string;
             lastName: string;
             phone: string;
             contactMethod: import(".prisma/client").$Enums.ContactMethod;
-            createdAt: Date;
-            updatedAt: Date;
         };
         lead: {
-            description: string;
             id: string;
             createdAt: Date;
-            updatedAt: Date;
             customerId: string;
+            updatedAt: Date;
             serviceType: import(".prisma/client").$Enums.ServiceType;
+            description: string;
             budgetEstimated: string | null;
             urgency: import(".prisma/client").$Enums.Urgency;
             propertyType: import(".prisma/client").$Enums.PropertyType;
@@ -50,10 +50,10 @@ export declare class AppointmentsService {
     } & {
         id: string;
         createdAt: Date;
-        updatedAt: Date;
         customerId: string;
-        status: import(".prisma/client").$Enums.AppointmentStatus;
+        updatedAt: Date;
         date: Date;
+        status: import(".prisma/client").$Enums.AppointmentStatus;
         mode: import(".prisma/client").$Enums.AppointmentMode;
         comments: string | null;
         leadId: string | null;
@@ -62,22 +62,22 @@ export declare class AppointmentsService {
     findAll(query: AppointmentQueryDto): Promise<{
         items: ({
             customer: {
-                name: string;
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
                 email: string;
                 lastName: string;
                 phone: string;
                 contactMethod: import(".prisma/client").$Enums.ContactMethod;
-                createdAt: Date;
-                updatedAt: Date;
             };
             lead: {
-                description: string;
                 id: string;
                 createdAt: Date;
-                updatedAt: Date;
                 customerId: string;
+                updatedAt: Date;
                 serviceType: import(".prisma/client").$Enums.ServiceType;
+                description: string;
                 budgetEstimated: string | null;
                 urgency: import(".prisma/client").$Enums.Urgency;
                 propertyType: import(".prisma/client").$Enums.PropertyType;
@@ -87,10 +87,10 @@ export declare class AppointmentsService {
         } & {
             id: string;
             createdAt: Date;
-            updatedAt: Date;
             customerId: string;
-            status: import(".prisma/client").$Enums.AppointmentStatus;
+            updatedAt: Date;
             date: Date;
+            status: import(".prisma/client").$Enums.AppointmentStatus;
             mode: import(".prisma/client").$Enums.AppointmentMode;
             comments: string | null;
             leadId: string | null;
@@ -104,22 +104,22 @@ export declare class AppointmentsService {
     }>;
     findOne(id: string): Promise<{
         customer: {
-            name: string;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
             email: string;
             lastName: string;
             phone: string;
             contactMethod: import(".prisma/client").$Enums.ContactMethod;
-            createdAt: Date;
-            updatedAt: Date;
         };
         lead: {
-            description: string;
             id: string;
             createdAt: Date;
-            updatedAt: Date;
             customerId: string;
+            updatedAt: Date;
             serviceType: import(".prisma/client").$Enums.ServiceType;
+            description: string;
             budgetEstimated: string | null;
             urgency: import(".prisma/client").$Enums.Urgency;
             propertyType: import(".prisma/client").$Enums.PropertyType;
@@ -129,10 +129,10 @@ export declare class AppointmentsService {
     } & {
         id: string;
         createdAt: Date;
-        updatedAt: Date;
         customerId: string;
-        status: import(".prisma/client").$Enums.AppointmentStatus;
+        updatedAt: Date;
         date: Date;
+        status: import(".prisma/client").$Enums.AppointmentStatus;
         mode: import(".prisma/client").$Enums.AppointmentMode;
         comments: string | null;
         leadId: string | null;
@@ -140,10 +140,10 @@ export declare class AppointmentsService {
     update(id: string, data: Partial<CreateAppointmentDto>): Promise<{
         id: string;
         createdAt: Date;
-        updatedAt: Date;
         customerId: string;
-        status: import(".prisma/client").$Enums.AppointmentStatus;
+        updatedAt: Date;
         date: Date;
+        status: import(".prisma/client").$Enums.AppointmentStatus;
         mode: import(".prisma/client").$Enums.AppointmentMode;
         comments: string | null;
         leadId: string | null;
