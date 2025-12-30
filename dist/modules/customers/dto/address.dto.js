@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateAddressDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
+const class_transformer_1 = require("class-transformer");
 class CreateAddressDto {
 }
 exports.CreateAddressDto = CreateAddressDto;
@@ -50,7 +51,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({ example: 'lt 24', name: 'noExt', required: false }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
-    Transform(({ value, obj }) => value || obj.NoExt),
+    (0, class_transformer_1.Transform)(({ value, obj }) => value || obj.NoExt),
     __metadata("design:type", String)
 ], CreateAddressDto.prototype, "noExt", void 0);
 __decorate([
