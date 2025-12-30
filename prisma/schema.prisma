@@ -191,3 +191,21 @@ model LeadEvent {
   @@index([type, createdAt])
   @@map("lead_events")
 }
+
+enum UserRole {
+  ADMIN
+  TECH
+  SALES
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  role         UserRole  @default(ADMIN)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("users")
+}

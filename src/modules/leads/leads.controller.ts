@@ -1,16 +1,19 @@
 import { Controller, Get, Post, Body, Param, Query, Patch, NotFoundException, Ip, Headers } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { LeadsService } from './leads.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { LeadQueryDto } from './dto/lead-query.dto';
+import { Public } from '@/common/decorators/public.decorator';
 
 @ApiTags('Leads')
+@ApiBearerAuth()
 @Controller('leads')
 export class LeadsController {
     constructor(private readonly leadsService: LeadsService) { }
 
+    @Public()
     @Post()
-    @ApiOperation({ summary: 'Create a new lead' })
+    @ApiOperation({ summary: 'Create a new lead (Public for Funnel)' })
     create(
         @Body() createLeadDto: CreateLeadDto,
         @Ip() ip: string,

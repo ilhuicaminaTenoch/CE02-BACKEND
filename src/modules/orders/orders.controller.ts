@@ -1,11 +1,12 @@
 import { Controller, Get, Post, Body, Param, Query, Patch, Delete, NotFoundException, Ip, Headers } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { AddItemDto, UpdateItemDto } from './dto/add-item.dto';
 import { OrderQueryDto } from './dto/order-query.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 
 @ApiTags('Orders & Cart')
+@ApiBearerAuth()
 @Controller('orders')
 export class OrdersController {
     constructor(private readonly ordersService: OrdersService) { }
