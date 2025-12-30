@@ -42,7 +42,7 @@ let CustomersService = class CustomersService {
                         state: address.state,
                         zipCode: address.zipCode,
                         noInt: address.noInt,
-                        noExt: address.noExt,
+                        noExt: address.noExt || address.NoExt,
                         settlement: address.settlement,
                     })) || [],
                 },
