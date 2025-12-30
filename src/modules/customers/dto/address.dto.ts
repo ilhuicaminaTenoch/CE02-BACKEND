@@ -29,11 +29,16 @@ export class CreateAddressDto {
     @IsNotEmpty()
     noInt: string;
 
-    @ApiProperty({ example: 'lt 24', name: 'NoExt' })
+    @ApiProperty({ example: 'lt 24', name: 'noExt', required: false })
     @IsString()
-    @IsNotEmpty()
-    @Expose({ name: 'NoExt' })
+    @IsOptional()
+    @Transform(({ value, obj }) => value || obj.NoExt)
     noExt: string;
+
+    @ApiPropertyOptional({ example: 'lt 24' })
+    @IsString()
+    @IsOptional()
+    NoExt?: string;
 
     @ApiProperty({ example: 'Colonia Centro' })
     @IsString()

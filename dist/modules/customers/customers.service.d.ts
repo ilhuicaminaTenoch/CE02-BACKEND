@@ -1,10 +1,12 @@
 import { PrismaService } from '@/common/prisma/prisma.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
+import { LeadEventsService } from '../leadevents/leadevents.service';
 export declare class CustomersService {
     private prisma;
-    constructor(prisma: PrismaService);
-    create(createCustomerDto: CreateCustomerDto): Promise<{
+    private leadEventsService;
+    constructor(prisma: PrismaService, leadEventsService: LeadEventsService);
+    create(createCustomerDto: CreateCustomerDto, ip?: string, userAgent?: string): Promise<{
         addresses: {
             id: string;
             street: string;
@@ -14,10 +16,10 @@ export declare class CustomersService {
             noInt: string;
             noExt: string;
             settlement: string;
+            customerId: string;
             createdAt: Date;
             updatedAt: Date;
             references: string | null;
-            customerId: string;
         }[];
     } & {
         name: string;
@@ -62,17 +64,17 @@ export declare class CustomersService {
             noInt: string;
             noExt: string;
             settlement: string;
+            customerId: string;
             createdAt: Date;
             updatedAt: Date;
             references: string | null;
-            customerId: string;
         }[];
         leads: {
             description: string;
             id: string;
+            customerId: string;
             createdAt: Date;
             updatedAt: Date;
-            customerId: string;
             serviceType: import(".prisma/client").$Enums.ServiceType;
             budgetEstimated: string | null;
             urgency: import(".prisma/client").$Enums.Urgency;
@@ -82,9 +84,10 @@ export declare class CustomersService {
         }[];
         orders: {
             id: string;
+            customerId: string;
+            leadId: string | null;
             createdAt: Date;
             updatedAt: Date;
-            customerId: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             subtotal: number;
             total: number;
@@ -109,10 +112,10 @@ export declare class CustomersService {
             noInt: string;
             noExt: string;
             settlement: string;
+            customerId: string;
             createdAt: Date;
             updatedAt: Date;
             references: string | null;
-            customerId: string;
         }[];
     } & {
         name: string;

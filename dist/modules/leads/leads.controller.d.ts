@@ -4,7 +4,7 @@ import { LeadQueryDto } from './dto/lead-query.dto';
 export declare class LeadsController {
     private readonly leadsService;
     constructor(leadsService: LeadsService);
-    create(createLeadDto: CreateLeadDto): Promise<{
+    create(createLeadDto: CreateLeadDto, ip: string, userAgent: string): Promise<{
         customer: {
             name: string;
             id: string;
@@ -18,9 +18,9 @@ export declare class LeadsController {
     } & {
         description: string;
         id: string;
+        customerId: string;
         createdAt: Date;
         updatedAt: Date;
-        customerId: string;
         serviceType: import(".prisma/client").$Enums.ServiceType;
         budgetEstimated: string | null;
         urgency: import(".prisma/client").$Enums.Urgency;
@@ -43,9 +43,9 @@ export declare class LeadsController {
         } & {
             description: string;
             id: string;
+            customerId: string;
             createdAt: Date;
             updatedAt: Date;
-            customerId: string;
             serviceType: import(".prisma/client").$Enums.ServiceType;
             budgetEstimated: string | null;
             urgency: import(".prisma/client").$Enums.Urgency;
@@ -73,21 +73,21 @@ export declare class LeadsController {
         };
         appointments: {
             id: string;
+            customerId: string;
+            leadId: string | null;
             createdAt: Date;
             updatedAt: Date;
-            customerId: string;
             status: import(".prisma/client").$Enums.AppointmentStatus;
             date: Date;
             mode: import(".prisma/client").$Enums.AppointmentMode;
             comments: string | null;
-            leadId: string | null;
         }[];
     } & {
         description: string;
         id: string;
+        customerId: string;
         createdAt: Date;
         updatedAt: Date;
-        customerId: string;
         serviceType: import(".prisma/client").$Enums.ServiceType;
         budgetEstimated: string | null;
         urgency: import(".prisma/client").$Enums.Urgency;
@@ -95,12 +95,12 @@ export declare class LeadsController {
         numCameras: number | null;
         numAccessPoints: number | null;
     }>;
-    update(id: string, data: Partial<CreateLeadDto>): Promise<{
+    update(id: string, data: Partial<CreateLeadDto>, ip: string, userAgent: string): Promise<{
         description: string;
         id: string;
+        customerId: string;
         createdAt: Date;
         updatedAt: Date;
-        customerId: string;
         serviceType: import(".prisma/client").$Enums.ServiceType;
         budgetEstimated: string | null;
         urgency: import(".prisma/client").$Enums.Urgency;

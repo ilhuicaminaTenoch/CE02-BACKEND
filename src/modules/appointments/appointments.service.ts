@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/common/prisma/prisma.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AppointmentQueryDto } from './dto/appointment-query.dto';
-import { Prisma } from '@prisma/client';
+import { Prisma, LeadEventType } from '@prisma/client';
 import { MailService } from '../mail/mail.service';
 import { ConfigService } from '@nestjs/config';
-
+import { LeadEventsService } from '../leadevents/leadevents.service';
 
 @Injectable()
 export class AppointmentsService {
@@ -13,9 +13,10 @@ export class AppointmentsService {
         private prisma: PrismaService,
         private mailService: MailService,
         private configService: ConfigService,
+        private leadEventsService: LeadEventsService,
     ) { }
 
-    async create(createAppointmentDto: CreateAppointmentDto) {
+    async create(createAppointmentDto: CreateAppointmentDto, ip?: string, userAgent?: string) {
         const appointment = await this.prisma.appointment.create({
             data: createAppointmentDto as unknown as Prisma.AppointmentCreateInput,
             include: {
@@ -29,6 +30,19 @@ export class AppointmentsService {
                 },
                 lead: true,
             },
+        });
+
+        // Register LeadEvent
+        await this.leadEventsService.createEvent({
+            customerId: appointment.customerId,
+            leadId: appointment.leadId,
+            type: LeadEventType.APPOINTMENT_SCHEDULED,
+            metadata: {
+                date: appointment.date,
+                mode: appointment.mode,
+            },
+            ip,
+            userAgent,
         });
 
         // Trigger emails in background (fail-safe)

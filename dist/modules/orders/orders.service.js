@@ -14,12 +14,95 @@ const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
 const prisma_service_1 = require("../../common/prisma/prisma.service");
 const syscom_service_1 = require("../syscom/syscom.service");
+const leadevents_service_1 = require("../leadevents/leadevents.service");
 const mail_service_1 = require("../mail/mail.service");
 let OrdersService = class OrdersService {
-    constructor(prisma, syscom, mailService) {
+    constructor(prisma, syscom, mailService, leadEventsService) {
         this.prisma = prisma;
         this.syscom = syscom;
         this.mailService = mailService;
+        this.leadEventsService = leadEventsService;
+    }
+    async create(dto) {
+        const { customerId, leadId, items } = dto;
+        const exchangeRate = await this.syscom.getExchangeRate();
+        const order = await this.prisma.$transaction(async (tx) => {
+            const newOrder = await tx.order.create({
+                data: {
+                    customerId,
+                    leadId,
+                    status: client_1.OrderStatus.DRAFT,
+                },
+            });
+            for (const item of items) {
+                const product = await this.syscom.getProduct(item.productId);
+                if (!product)
+                    throw new common_1.NotFoundException(`Product ${item.productId} not found`);
+                const priceUsd = parseFloat(product.precios?.precio_lista || '0');
+                const price = Math.round(priceUsd * exchangeRate * 100) / 100;
+                await tx.orderItem.create({
+                    data: {
+                        orderId: newOrder.id,
+                        productId: item.productId,
+                        quantity: item.quantity,
+                        unitPrice: price,
+                        lineTotal: item.quantity * price,
+                    },
+                });
+            }
+            return this.recalculateTotals(newOrder.id, tx);
+        });
+        return order;
+    }
+    async submitOrderById(id, leadId, ip, userAgent) {
+        return this.prisma.$transaction(async (tx) => {
+            const order = await tx.order.findUnique({
+                where: { id },
+                include: { items: true, customer: true },
+            });
+            if (!order)
+                throw new common_1.NotFoundException('Order not found');
+            if (order.status !== client_1.OrderStatus.DRAFT) {
+                if (order.status === client_1.OrderStatus.SUBMITTED)
+                    return order;
+                throw new common_1.ConflictException('Order is already closed or cancelled');
+            }
+            if (order.items.length === 0) {
+                throw new common_1.BadRequestException('Order has no items');
+            }
+            let finalLeadId = leadId || order.leadId;
+            if (!finalLeadId) {
+                const lastLead = await tx.lead.findFirst({
+                    where: { customerId: order.customerId },
+                    orderBy: { createdAt: 'desc' },
+                });
+                finalLeadId = lastLead?.id;
+            }
+            const updatedOrder = await tx.order.update({
+                where: { id },
+                data: {
+                    status: client_1.OrderStatus.SUBMITTED,
+                    leadId: finalLeadId,
+                },
+                include: { items: true, customer: true },
+            });
+            await this.leadEventsService.createEvent({
+                customerId: updatedOrder.customerId,
+                leadId: updatedOrder.leadId || undefined,
+                type: client_1.LeadEventType.ORDER_SUBMITTED,
+                metadata: {
+                    total: updatedOrder.total,
+                    orderId: updatedOrder.id,
+                    itemCount: updatedOrder.items.length,
+                },
+                ip,
+                userAgent,
+            });
+            this.enrichAndSendEmail(updatedOrder).catch(err => {
+                console.error('Failed to trigger email notification:', err);
+            });
+            return updatedOrder;
+        });
     }
     async getOrCreateCart(customerId) {
         let cart = await this.prisma.order.findFirst({
@@ -105,7 +188,7 @@ let OrdersService = class OrdersService {
             return this.recalculateTotals(item.orderId, tx);
         });
     }
-    async submitOrder(customerId) {
+    async submitOrder(customerId, ip, userAgent) {
         const cart = await this.prisma.order.findFirst({
             where: { customerId, status: client_1.OrderStatus.DRAFT },
             include: { items: true },
@@ -113,18 +196,7 @@ let OrdersService = class OrdersService {
         if (!cart || cart.items.length === 0) {
             throw new common_1.BadRequestException('Cart is empty or not found');
         }
-        const order = await this.prisma.order.update({
-            where: { id: cart.id },
-            data: { status: client_1.OrderStatus.SUBMITTED },
-            include: {
-                items: true,
-                customer: true,
-            },
-        });
-        this.enrichAndSendEmail(order).catch(err => {
-            console.error('Failed to trigger email notification:', err);
-        });
-        return order;
+        return this.submitOrderById(cart.id, undefined, ip, userAgent);
     }
     async enrichAndSendEmail(order) {
         try {
@@ -193,6 +265,7 @@ exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         syscom_service_1.SyscomService,
-        mail_service_1.MailService])
+        mail_service_1.MailService,
+        leadevents_service_1.LeadEventsService])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map

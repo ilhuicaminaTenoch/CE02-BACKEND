@@ -5,5 +5,6 @@ export declare class CreateAddressDto {
     zipCode?: string;
     noInt: string;
     noExt: string;
+    NoExt?: string;
     settlement: string;
 }

@@ -1,13 +1,31 @@
-import { Controller, Get, Post, Body, Param, Query, Patch, Delete, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Patch, Delete, NotFoundException, Ip, Headers } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { AddItemDto, UpdateItemDto } from './dto/add-item.dto';
 import { OrderQueryDto } from './dto/order-query.dto';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @ApiTags('Orders & Cart')
 @Controller('orders')
 export class OrdersController {
     constructor(private readonly ordersService: OrdersService) { }
+
+    @Post()
+    @ApiOperation({ summary: 'Create a new order (DRAFT)' })
+    create(@Body() createOrderDto: CreateOrderDto) {
+        return this.ordersService.create(createOrderDto);
+    }
+
+    @Patch(':id/submit')
+    @ApiOperation({ summary: 'Submit an order by ID' })
+    submitById(
+        @Param('id') id: string,
+        @Body('leadId') leadId: string,
+        @Ip() ip: string,
+        @Headers('user-agent') userAgent: string,
+    ) {
+        return this.ordersService.submitOrderById(id, leadId, ip, userAgent);
+    }
 
     @Get('cart')
     @ApiOperation({ summary: 'Get active cart for a customer' })
@@ -34,9 +52,13 @@ export class OrdersController {
     }
 
     @Post('cart/submit')
-    @ApiOperation({ summary: 'Submit cart to create a formal order' })
-    submit(@Body('customerId') customerId: string) {
-        return this.ordersService.submitOrder(customerId);
+    @ApiOperation({ summary: 'Submit cart (classic endpoint)' })
+    submit(
+        @Body('customerId') customerId: string,
+        @Ip() ip: string,
+        @Headers('user-agent') userAgent: string,
+    ) {
+        return this.ordersService.submitOrder(customerId, ip, userAgent);
     }
 
     @Get()

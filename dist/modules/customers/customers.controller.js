@@ -22,8 +22,8 @@ let CustomersController = class CustomersController {
     constructor(customersService) {
         this.customersService = customersService;
     }
-    create(createCustomerDto) {
-        return this.customersService.create(createCustomerDto);
+    create(createCustomerDto, ip, userAgent) {
+        return this.customersService.create(createCustomerDto, ip, userAgent);
     }
     findAll(query) {
         return this.customersService.findAll(query);
@@ -43,8 +43,10 @@ __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new customer' }),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Ip)()),
+    __param(2, (0, common_1.Headers)('user-agent')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_customer_dto_1.CreateCustomerDto]),
+    __metadata("design:paramtypes", [create_customer_dto_1.CreateCustomerDto, String, String]),
     __metadata("design:returntype", void 0)
 ], CustomersController.prototype, "create", null);
 __decorate([

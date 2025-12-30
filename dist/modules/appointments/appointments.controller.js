@@ -22,8 +22,8 @@ let AppointmentsController = class AppointmentsController {
     constructor(appointmentsService) {
         this.appointmentsService = appointmentsService;
     }
-    create(createAppointmentDto) {
-        return this.appointmentsService.create(createAppointmentDto);
+    create(createAppointmentDto, ip, userAgent) {
+        return this.appointmentsService.create(createAppointmentDto, ip, userAgent);
     }
     findAll(query) {
         return this.appointmentsService.findAll(query);
@@ -43,8 +43,10 @@ __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Schedule a new appointment' }),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Ip)()),
+    __param(2, (0, common_1.Headers)('user-agent')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_appointment_dto_1.CreateAppointmentDto]),
+    __metadata("design:paramtypes", [create_appointment_dto_1.CreateAppointmentDto, String, String]),
     __metadata("design:returntype", void 0)
 ], AppointmentsController.prototype, "create", null);
 __decorate([

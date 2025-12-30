@@ -12,15 +12,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppointmentsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../common/prisma/prisma.service");
+const client_1 = require("@prisma/client");
 const mail_service_1 = require("../mail/mail.service");
 const config_1 = require("@nestjs/config");
+const leadevents_service_1 = require("../leadevents/leadevents.service");
 let AppointmentsService = class AppointmentsService {
-    constructor(prisma, mailService, configService) {
+    constructor(prisma, mailService, configService, leadEventsService) {
         this.prisma = prisma;
         this.mailService = mailService;
         this.configService = configService;
+        this.leadEventsService = leadEventsService;
     }
-    async create(createAppointmentDto) {
+    async create(createAppointmentDto, ip, userAgent) {
         const appointment = await this.prisma.appointment.create({
             data: createAppointmentDto,
             include: {
@@ -34,6 +37,17 @@ let AppointmentsService = class AppointmentsService {
                 },
                 lead: true,
             },
+        });
+        await this.leadEventsService.createEvent({
+            customerId: appointment.customerId,
+            leadId: appointment.leadId,
+            type: client_1.LeadEventType.APPOINTMENT_SCHEDULED,
+            metadata: {
+                date: appointment.date,
+                mode: appointment.mode,
+            },
+            ip,
+            userAgent,
         });
         this.sendEmails(appointment).catch(err => {
             console.error('Error in sendEmails background task:', err);
@@ -122,6 +136,7 @@ exports.AppointmentsService = AppointmentsService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         mail_service_1.MailService,
-        config_1.ConfigService])
+        config_1.ConfigService,
+        leadevents_service_1.LeadEventsService])
 ], AppointmentsService);
 //# sourceMappingURL=appointments.service.js.map

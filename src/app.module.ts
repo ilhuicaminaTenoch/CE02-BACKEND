@@ -8,6 +8,7 @@ import { LeadsModule } from './modules/leads/leads.module';
 import { AppointmentsModule } from './modules/appointments/appointments.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { SyscomModule } from './modules/syscom/syscom.module';
+import { LeadEventsModule } from './modules/leadevents/leadevents.module';
 
 @Module({
     imports: [
@@ -21,6 +22,7 @@ import { SyscomModule } from './modules/syscom/syscom.module';
         LeadsModule,
         AppointmentsModule,
         OrdersModule,
+        LeadEventsModule,
     ],
     controllers: [HealthController],
     providers: [PrismaService],

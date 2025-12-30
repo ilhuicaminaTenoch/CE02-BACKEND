@@ -12,15 +12,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LeadsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../common/prisma/prisma.service");
+const client_1 = require("@prisma/client");
+const leadevents_service_1 = require("../leadevents/leadevents.service");
 let LeadsService = class LeadsService {
-    constructor(prisma) {
+    constructor(prisma, leadEventsService) {
         this.prisma = prisma;
+        this.leadEventsService = leadEventsService;
     }
-    async create(createLeadDto) {
-        return this.prisma.lead.create({
+    async create(createLeadDto, ip, userAgent) {
+        const lead = await this.prisma.lead.create({
             data: createLeadDto,
             include: { customer: true },
         });
+        await this.leadEventsService.createEvent({
+            customerId: lead.customerId,
+            leadId: lead.id,
+            type: client_1.LeadEventType.LEAD_CREATED,
+            metadata: {
+                serviceType: lead.serviceType,
+                propertyType: lead.propertyType,
+                urgency: lead.urgency,
+            },
+            ip,
+            userAgent,
+        });
+        return lead;
     }
     async findAll(query) {
         const { page, limit, serviceType, urgency, propertyType, customerId, search } = query;
@@ -60,16 +76,29 @@ let LeadsService = class LeadsService {
             include: { customer: true, appointments: true },
         });
     }
-    async update(id, data) {
-        return this.prisma.lead.update({
+    async update(id, data, ip, userAgent) {
+        const lead = await this.prisma.lead.update({
             where: { id },
             data: data,
         });
+        await this.leadEventsService.createEvent({
+            customerId: lead.customerId,
+            leadId: lead.id,
+            type: client_1.LeadEventType.LEAD_UPDATED,
+            metadata: {
+                changedFields: Object.keys(data),
+                ...data,
+            },
+            ip,
+            userAgent,
+        });
+        return lead;
     }
 };
 exports.LeadsService = LeadsService;
 exports.LeadsService = LeadsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        leadevents_service_1.LeadEventsService])
 ], LeadsService);
 //# sourceMappingURL=leads.service.js.map

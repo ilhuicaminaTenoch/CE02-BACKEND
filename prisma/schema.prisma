@@ -54,6 +54,21 @@ enum ContactMethod {
   EMAIL
 }
 
+enum LeadEventType {
+  CUSTOMER_CREATED
+  LEAD_CREATED
+  LEAD_UPDATED
+  APPOINTMENT_SCHEDULED
+  APPOINTMENT_COMPLETED
+  ORDER_SUBMITTED
+  ORDER_QUOTED
+  DEAL_WON
+  DEAL_LOST
+  SPAM_FLAGGED
+
+  @@map("leadeventtype")
+}
+
 model Customer {
   id            String        @id @default(uuid())
   email         String        @unique
@@ -67,6 +82,7 @@ model Customer {
   contactMethod ContactMethod
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  leadEvents    LeadEvent[]
 
   @@map("customers")
 }
@@ -103,6 +119,8 @@ model Lead {
   appointments    Appointment[]
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+  orders          Order[]
+  leadEvents      LeadEvent[]
 
   @@map("leads")
 }
@@ -110,16 +128,19 @@ model Lead {
 // Local Product table removed. Using external Syscom ID in OrderItem.
 
 model Order {
-  id           String        @id @default(uuid())
-  status       OrderStatus   @default(DRAFT)
-  subtotal     Float         @default(0)
-  total        Float         @default(0)
-  customer     Customer      @relation(fields: [customerId], references: [id])
-  customerId   String
-  items        OrderItem[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id         String      @id @default(uuid())
+  status     OrderStatus @default(DRAFT)
+  subtotal   Float       @default(0)
+  total      Float       @default(0)
+  customer   Customer    @relation(fields: [customerId], references: [id])
+  customerId String
+  leadId     String?
+  lead       Lead?       @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  items      OrderItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
+  @@index([leadId])
   @@map("orders")
 }
 
@@ -151,4 +172,22 @@ model Appointment {
   updatedAt  DateTime          @updatedAt
 
   @@map("appointments")
+}
+
+model LeadEvent {
+  id         String        @id
+  customerId String
+  leadId     String?
+  type       LeadEventType
+  metadata   Json          @default("{}")
+  ip         String?       @db.Inet // si tu Prisma no soporta Inet, cámbialo a String? sin @db.Inet
+  userAgent  String?       @map("user_agent")
+  createdAt  DateTime      @default(now()) @map("createdAt")
+  customer   Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  lead       Lead?         @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([customerId, createdAt])
+  @@index([leadId, createdAt])
+  @@index([type, createdAt])
+  @@map("lead_events")
 }
