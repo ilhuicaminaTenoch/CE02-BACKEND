@@ -17,6 +17,7 @@ const leads_module_1 = require("./modules/leads/leads.module");
 const appointments_module_1 = require("./modules/appointments/appointments.module");
 const orders_module_1 = require("./modules/orders/orders.module");
 const syscom_module_1 = require("./modules/syscom/syscom.module");
+const leadevents_module_1 = require("./modules/leadevents/leadevents.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -33,6 +34,7 @@ exports.AppModule = AppModule = __decorate([
             leads_module_1.LeadsModule,
             appointments_module_1.AppointmentsModule,
             orders_module_1.OrdersModule,
+            leadevents_module_1.LeadEventsModule,
         ],
         controllers: [health_controller_1.HealthController],
         providers: [prisma_service_1.PrismaService],

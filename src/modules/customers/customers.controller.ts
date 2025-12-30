@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query, Patch, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Patch, NotFoundException, Ip, Headers } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
@@ -11,8 +11,12 @@ export class CustomersController {
 
     @Post()
     @ApiOperation({ summary: 'Create a new customer' })
-    create(@Body() createCustomerDto: CreateCustomerDto) {
-        return this.customersService.create(createCustomerDto);
+    create(
+        @Body() createCustomerDto: CreateCustomerDto,
+        @Ip() ip: string,
+        @Headers('user-agent') userAgent: string,
+    ) {
+        return this.customersService.create(createCustomerDto, ip, userAgent);
     }
 
     @Get()

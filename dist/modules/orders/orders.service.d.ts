@@ -2,96 +2,74 @@ import { PrismaService } from '@/common/prisma/prisma.service';
 import { AddItemDto, UpdateItemDto } from './dto/add-item.dto';
 import { OrderQueryDto } from './dto/order-query.dto';
 import { SyscomService } from '../syscom/syscom.service';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { LeadEventsService } from '../leadevents/leadevents.service';
 import { MailService } from '../mail/mail.service';
 export declare class OrdersService {
     private prisma;
     private syscom;
     private mailService;
-    constructor(prisma: PrismaService, syscom: SyscomService, mailService: MailService);
+    private leadEventsService;
+    constructor(prisma: PrismaService, syscom: SyscomService, mailService: MailService, leadEventsService: LeadEventsService);
+    create(dto: CreateOrderDto): Promise<any>;
+    submitOrderById(id: string, leadId?: string, ip?: string, userAgent?: string): Promise<any>;
     getOrCreateCart(customerId: string): Promise<{
         items: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            productId: string;
             quantity: number;
             unitPrice: number;
             lineTotal: number;
-            productId: string;
             orderId: string;
         }[];
     } & {
         id: string;
+        customerId: string;
+        leadId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
         total: number;
-        customerId: string;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     addItem(addItemDto: AddItemDto): Promise<any>;
     updateItem(itemId: string, updateItemDto: UpdateItemDto): Promise<any>;
     removeItem(itemId: string): Promise<any>;
-    submitOrder(customerId: string): Promise<{
-        customer: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            email: string;
-            lastName: string;
-            phone: string;
-            contactMethod: import(".prisma/client").$Enums.ContactMethod;
-        };
-        items: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            quantity: number;
-            unitPrice: number;
-            lineTotal: number;
-            productId: string;
-            orderId: string;
-        }[];
-    } & {
-        id: string;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        subtotal: number;
-        total: number;
-        customerId: string;
-        createdAt: Date;
-        updatedAt: Date;
-    }>;
+    submitOrder(customerId: string, ip?: string, userAgent?: string): Promise<any>;
     private enrichAndSendEmail;
     findAll(query: OrderQueryDto): Promise<{
         items: ({
             customer: {
-                id: string;
-                createdAt: Date;
-                updatedAt: Date;
                 name: string;
+                id: string;
                 email: string;
                 lastName: string;
                 phone: string;
                 contactMethod: import(".prisma/client").$Enums.ContactMethod;
+                createdAt: Date;
+                updatedAt: Date;
             };
             items: {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
+                productId: string;
                 quantity: number;
                 unitPrice: number;
                 lineTotal: number;
-                productId: string;
                 orderId: string;
             }[];
         } & {
             id: string;
+            customerId: string;
+            leadId: string | null;
+            createdAt: Date;
+            updatedAt: Date;
             status: import(".prisma/client").$Enums.OrderStatus;
             subtotal: number;
             total: number;
-            customerId: string;
-            createdAt: Date;
-            updatedAt: Date;
         })[];
         meta: {
             total: number;
@@ -102,33 +80,34 @@ export declare class OrdersService {
     }>;
     findOne(id: string): Promise<{
         customer: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
             name: string;
+            id: string;
             email: string;
             lastName: string;
             phone: string;
             contactMethod: import(".prisma/client").$Enums.ContactMethod;
+            createdAt: Date;
+            updatedAt: Date;
         };
         items: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            productId: string;
             quantity: number;
             unitPrice: number;
             lineTotal: number;
-            productId: string;
             orderId: string;
         }[];
     } & {
         id: string;
+        customerId: string;
+        leadId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
         total: number;
-        customerId: string;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     private recalculateTotals;
 }

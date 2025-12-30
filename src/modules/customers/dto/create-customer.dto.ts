@@ -52,5 +52,39 @@ export class CreateCustomerDto {
     @Type(() => CreateAddressDto)
     addresses?: CreateAddressDto[];
 
+    @ApiPropertyOptional({ example: 'google' })
+    @IsOptional()
+    @IsString()
+    utm_source?: string;
 
+    @ApiPropertyOptional({ example: 'summer_sale' })
+    @IsOptional()
+    @IsString()
+    utm_campaign?: string;
+
+    @ApiPropertyOptional({ example: 'email' })
+    @IsOptional()
+    @IsString()
+    utm_medium?: string;
+
+    @ApiPropertyOptional({ example: 'video_ad' })
+    @IsOptional()
+    @IsString()
+    utm_content?: string;
+
+    @ApiPropertyOptional({ example: 'cctv_mexico' })
+    @IsOptional()
+    @IsString()
+    utm_term?: string;
+
+    @ApiPropertyOptional({ example: 'https://google.com' })
+    @IsOptional()
+    @IsString()
+    referrer?: string;
+
+    @ApiPropertyOptional({ example: '/lighting-promo' })
+    @IsOptional()
+    @IsString()
+    landingPath?: string;
 }
+

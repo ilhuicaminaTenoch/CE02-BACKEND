@@ -86,10 +86,51 @@ APP_PUBLIC_URL=http://localhost:3000
 - `POST /api/orders/cart/submit`: Convertir carrito en solicitud formal.
 - `GET /api/orders`: Listar órdenes enviadas.
 
+## Flujo del Funnel y Instrumentación (Lead Events)
+
+El sistema está instrumentado para rastrear el viaje del cliente a través de un "funnel" de ventas, registrando cada acción significativa en la tabla `lead_events`.
+
+### Proceso Sugerido para el Frontend:
+
+1.  **Paso 1: Identificación (Customer)**
+    *   `POST /api/customers`
+    *   **Idempotente**: Si el email ya existe, devuelve el cliente actual.
+    *   **Evento**: `CUSTOMER_CREATED` (Incluye UTMs y Referrer).
+    *   **Retorno**: `customerId`.
+
+2.  **Paso 2: Calificación (Lead)**
+    *   `POST /api/leads`
+    *   Captura necesidades (CCTV, Domótica, etc.).
+    *   **Evento**: `LEAD_CREATED`.
+    *   **Retorno**: `leadId`.
+
+3.  **Paso 3: Compromiso (Appointment)**
+    *   `POST /api/appointments`
+    *   Agenda visita técnica o llamada.
+    *   **Evento**: `APPOINTMENT_SCHEDULED`.
+    *   **Retorno**: `appointmentId`.
+
+4.  **Paso 4: Intención de Compra (Order DRAFT)**
+    *   `POST /api/orders`
+    *   Crea una cotización en borrador con productos de Syscom.
+    *   **Retorno**: `orderId`.
+
+5.  **Paso 5: Conversión (Order SUBMITTED)**
+    *   `PATCH /api/orders/:id/submit`
+    *   Finaliza el borrador, dispara correo de cotización al cliente.
+    *   **Evento**: `ORDER_SUBMITTED`.
+
+### Contratos de Respuesta y Errores
+- **201 Created / 200 OK**: Devuelve el objeto completo con su ID (uuid).
+- **400 Bad Request**: Datos de entrada inválidos (ej. teléfono != 10 dígitos).
+- **404 Not Found**: Recurso no encontrado.
+- **409 Conflict**: Intento de duplicación en estados no permitidos (ej. enviar una orden ya enviada).
+
 ## Estructura del Código
 
+- `src/modules/leadevents`: Servicio interno para registro de eventos (no expuesto vía REST).
 - `src/modules/*`: Módulos de negocio (Customers, Products, Orders, etc.).
 - `src/common/*`: Filtros globales, Prisma service, DTOs compartidos.
-- `src/modules/mail`: Módulo de gestión de correos con plantillas HTML.
+- `src/modules/mail`: Módulo de gestión de correos con plantillas Handlebars.
 - `prisma/schema.prisma`: Modelo de datos y relaciones.
 - `prisma/seed.ts`: Datos iniciales para el catálogo.

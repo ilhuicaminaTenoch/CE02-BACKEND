@@ -13,17 +13,20 @@ exports.CustomersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../common/prisma/prisma.service");
 const client_1 = require("@prisma/client");
+const leadevents_service_1 = require("../leadevents/leadevents.service");
 let CustomersService = class CustomersService {
-    constructor(prisma) {
+    constructor(prisma, leadEventsService) {
         this.prisma = prisma;
+        this.leadEventsService = leadEventsService;
     }
-    async create(createCustomerDto) {
-        const { addresses, email, name, lastName, phone, contactMethod } = createCustomerDto;
+    async create(createCustomerDto, ip, userAgent) {
+        const { addresses, email, name, lastName, phone, contactMethod, utm_source, utm_campaign, referrer, landingPath, } = createCustomerDto;
         const existingCustomer = await this.prisma.customer.findUnique({
             where: { email },
+            include: { addresses: true },
         });
         if (existingCustomer) {
-            throw new common_1.ConflictException('Ya existe un cliente registrado con ese email.');
+            return existingCustomer;
         }
         try {
             const dataForPrisma = {
@@ -39,20 +42,39 @@ let CustomersService = class CustomersService {
                         state: address.state,
                         zipCode: address.zipCode,
                         noInt: address.noInt,
-                        noExt: address.noExt,
+                        noExt: address.noExt || address.NoExt,
                         settlement: address.settlement,
                     })) || [],
                 },
             };
-            return await this.prisma.customer.create({
+            const customer = await this.prisma.customer.create({
                 data: dataForPrisma,
                 include: { addresses: true },
             });
+            await this.leadEventsService.createEvent({
+                customerId: customer.id,
+                type: client_1.LeadEventType.CUSTOMER_CREATED,
+                metadata: {
+                    utm_source: createCustomerDto.utm_source,
+                    utm_medium: createCustomerDto.utm_medium,
+                    utm_campaign: createCustomerDto.utm_campaign,
+                    utm_content: createCustomerDto.utm_content,
+                    utm_term: createCustomerDto.utm_term,
+                    referrer: createCustomerDto.referrer,
+                    landingPath: createCustomerDto.landingPath,
+                },
+                ip,
+                userAgent,
+            });
+            return customer;
         }
         catch (error) {
             if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
                 if (error.code === 'P2002') {
-                    throw new common_1.ConflictException('Ya existe un cliente registrado con ese email.');
+                    return this.prisma.customer.findUnique({
+                        where: { email },
+                        include: { addresses: true },
+                    });
                 }
             }
             throw error;
@@ -97,34 +119,55 @@ let CustomersService = class CustomersService {
         });
     }
     async update(id, updateDto) {
-        const { addresses, email, name, lastName, phone, contactMethod } = updateDto;
+        const { addresses, email, name, lastName, phone, contactMethod, ...tracking } = updateDto;
         const dataForPrisma = {
             ...(email && { email }),
             ...(name && { name }),
             ...(lastName && { lastName }),
             ...(phone && { phone }),
             ...(contactMethod && { contactMethod }),
-            ...(addresses && {
-                addresses: {
-                    deleteMany: {},
-                    create: addresses.map(address => ({
+        };
+        if (addresses) {
+            dataForPrisma.addresses = {
+                upsert: addresses.map(address => ({
+                    where: { id: address.id || '' },
+                    create: {
                         street: address.street,
                         city: address.city,
                         state: address.state,
                         zipCode: address.zipCode,
                         noInt: address.noInt,
-                        noExt: address.noExt,
+                        noExt: address.noExt || address.NoExt,
                         settlement: address.settlement,
-                    })),
-                },
-            }),
-        };
+                    },
+                    update: {
+                        street: address.street,
+                        city: address.city,
+                        state: address.state,
+                        zipCode: address.zipCode,
+                        noInt: address.noInt,
+                        noExt: address.noExt || address.NoExt,
+                        settlement: address.settlement,
+                    },
+                })),
+            };
+        }
         try {
-            return await this.prisma.customer.update({
+            const customer = await this.prisma.customer.update({
                 where: { id },
                 data: dataForPrisma,
                 include: { addresses: true },
             });
+            await this.leadEventsService.createEvent({
+                customerId: customer.id,
+                type: client_1.LeadEventType.CUSTOMER_CREATED,
+                metadata: {
+                    action: 'CUSTOMER_UPDATED',
+                    ...tracking,
+                    updatedAt: new Date().toISOString()
+                }
+            });
+            return customer;
         }
         catch (error) {
             if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
@@ -139,6 +182,7 @@ let CustomersService = class CustomersService {
 exports.CustomersService = CustomersService;
 exports.CustomersService = CustomersService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        leadevents_service_1.LeadEventsService])
 ], CustomersService);
 //# sourceMappingURL=customers.service.js.map

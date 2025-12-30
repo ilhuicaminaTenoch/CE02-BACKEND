@@ -3,18 +3,19 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AppointmentQueryDto } from './dto/appointment-query.dto';
 import { MailService } from '../mail/mail.service';
 import { ConfigService } from '@nestjs/config';
+import { LeadEventsService } from '../leadevents/leadevents.service';
 export declare class AppointmentsService {
     private prisma;
     private mailService;
     private configService;
-    constructor(prisma: PrismaService, mailService: MailService, configService: ConfigService);
-    create(createAppointmentDto: CreateAppointmentDto): Promise<{
+    private leadEventsService;
+    constructor(prisma: PrismaService, mailService: MailService, configService: ConfigService, leadEventsService: LeadEventsService);
+    create(createAppointmentDto: CreateAppointmentDto, ip?: string, userAgent?: string): Promise<{
         customer: {
             addresses: {
-                id: string;
                 customerId: string;
                 createdAt: Date;
-                updatedAt: Date;
+                id: string;
                 street: string;
                 noInt: string;
                 noExt: string;
@@ -23,10 +24,11 @@ export declare class AppointmentsService {
                 state: string;
                 zipCode: string | null;
                 references: string | null;
+                updatedAt: Date;
             }[];
         } & {
-            id: string;
             createdAt: Date;
+            id: string;
             updatedAt: Date;
             name: string;
             email: string;
@@ -35,9 +37,9 @@ export declare class AppointmentsService {
             contactMethod: import(".prisma/client").$Enums.ContactMethod;
         };
         lead: {
-            id: string;
             customerId: string;
             createdAt: Date;
+            id: string;
             updatedAt: Date;
             serviceType: import(".prisma/client").$Enums.ServiceType;
             description: string;
@@ -48,22 +50,22 @@ export declare class AppointmentsService {
             numAccessPoints: number | null;
         };
     } & {
-        id: string;
-        status: import(".prisma/client").$Enums.AppointmentStatus;
-        customerId: string;
-        createdAt: Date;
-        updatedAt: Date;
         date: Date;
+        status: import(".prisma/client").$Enums.AppointmentStatus;
         mode: import(".prisma/client").$Enums.AppointmentMode;
         comments: string | null;
+        customerId: string;
         leadId: string | null;
+        createdAt: Date;
+        id: string;
+        updatedAt: Date;
     }>;
     private sendEmails;
     findAll(query: AppointmentQueryDto): Promise<{
         items: ({
             customer: {
-                id: string;
                 createdAt: Date;
+                id: string;
                 updatedAt: Date;
                 name: string;
                 email: string;
@@ -72,9 +74,9 @@ export declare class AppointmentsService {
                 contactMethod: import(".prisma/client").$Enums.ContactMethod;
             };
             lead: {
-                id: string;
                 customerId: string;
                 createdAt: Date;
+                id: string;
                 updatedAt: Date;
                 serviceType: import(".prisma/client").$Enums.ServiceType;
                 description: string;
@@ -85,15 +87,15 @@ export declare class AppointmentsService {
                 numAccessPoints: number | null;
             };
         } & {
-            id: string;
-            status: import(".prisma/client").$Enums.AppointmentStatus;
-            customerId: string;
-            createdAt: Date;
-            updatedAt: Date;
             date: Date;
+            status: import(".prisma/client").$Enums.AppointmentStatus;
             mode: import(".prisma/client").$Enums.AppointmentMode;
             comments: string | null;
+            customerId: string;
             leadId: string | null;
+            createdAt: Date;
+            id: string;
+            updatedAt: Date;
         })[];
         meta: {
             total: number;
@@ -104,8 +106,8 @@ export declare class AppointmentsService {
     }>;
     findOne(id: string): Promise<{
         customer: {
-            id: string;
             createdAt: Date;
+            id: string;
             updatedAt: Date;
             name: string;
             email: string;
@@ -114,9 +116,9 @@ export declare class AppointmentsService {
             contactMethod: import(".prisma/client").$Enums.ContactMethod;
         };
         lead: {
-            id: string;
             customerId: string;
             createdAt: Date;
+            id: string;
             updatedAt: Date;
             serviceType: import(".prisma/client").$Enums.ServiceType;
             description: string;
@@ -127,25 +129,25 @@ export declare class AppointmentsService {
             numAccessPoints: number | null;
         };
     } & {
-        id: string;
-        status: import(".prisma/client").$Enums.AppointmentStatus;
-        customerId: string;
-        createdAt: Date;
-        updatedAt: Date;
         date: Date;
+        status: import(".prisma/client").$Enums.AppointmentStatus;
         mode: import(".prisma/client").$Enums.AppointmentMode;
         comments: string | null;
+        customerId: string;
         leadId: string | null;
+        createdAt: Date;
+        id: string;
+        updatedAt: Date;
     }>;
-    update(id: string, data: Partial<CreateAppointmentDto>): Promise<{
-        id: string;
-        status: import(".prisma/client").$Enums.AppointmentStatus;
-        customerId: string;
-        createdAt: Date;
-        updatedAt: Date;
+    update(id: string, data: Partial<CreateAppointmentDto>, ip?: string, userAgent?: string): Promise<{
         date: Date;
+        status: import(".prisma/client").$Enums.AppointmentStatus;
         mode: import(".prisma/client").$Enums.AppointmentMode;
         comments: string | null;
+        customerId: string;
         leadId: string | null;
+        createdAt: Date;
+        id: string;
+        updatedAt: Date;
     }>;
 }

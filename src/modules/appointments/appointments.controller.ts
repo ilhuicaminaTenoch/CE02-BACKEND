@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query, Patch, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Patch, NotFoundException, Ip, Headers } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
@@ -11,8 +11,12 @@ export class AppointmentsController {
 
     @Post()
     @ApiOperation({ summary: 'Schedule a new appointment' })
-    create(@Body() createAppointmentDto: CreateAppointmentDto) {
-        return this.appointmentsService.create(createAppointmentDto);
+    create(
+        @Body() createAppointmentDto: CreateAppointmentDto,
+        @Ip() ip: string,
+        @Headers('user-agent') userAgent: string,
+    ) {
+        return this.appointmentsService.create(createAppointmentDto, ip, userAgent);
     }
 
     @Get()
@@ -31,7 +35,12 @@ export class AppointmentsController {
 
     @Patch(':id')
     @ApiOperation({ summary: 'Update appointment (e.g. status or date)' })
-    update(@Param('id') id: string, @Body() data: Partial<CreateAppointmentDto>) {
-        return this.appointmentsService.update(id, data);
+    update(
+        @Param('id') id: string,
+        @Body() data: Partial<CreateAppointmentDto>,
+        @Ip() ip: string,
+        @Headers('user-agent') userAgent: string,
+    ) {
+        return this.appointmentsService.update(id, data, ip, userAgent);
     }
 }

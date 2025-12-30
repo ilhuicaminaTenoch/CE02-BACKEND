@@ -18,9 +18,16 @@ const swagger_1 = require("@nestjs/swagger");
 const orders_service_1 = require("./orders.service");
 const add_item_dto_1 = require("./dto/add-item.dto");
 const order_query_dto_1 = require("./dto/order-query.dto");
+const create_order_dto_1 = require("./dto/create-order.dto");
 let OrdersController = class OrdersController {
     constructor(ordersService) {
         this.ordersService = ordersService;
+    }
+    create(createOrderDto) {
+        return this.ordersService.create(createOrderDto);
+    }
+    submitById(id, leadId, ip, userAgent) {
+        return this.ordersService.submitOrderById(id, leadId, ip, userAgent);
     }
     getCart(customerId) {
         return this.ordersService.getOrCreateCart(customerId);
@@ -34,8 +41,8 @@ let OrdersController = class OrdersController {
     removeItem(itemId) {
         return this.ordersService.removeItem(itemId);
     }
-    submit(customerId) {
-        return this.ordersService.submitOrder(customerId);
+    submit(customerId, ip, userAgent) {
+        return this.ordersService.submitOrder(customerId, ip, userAgent);
     }
     findAll(query) {
         return this.ordersService.findAll(query);
@@ -48,6 +55,25 @@ let OrdersController = class OrdersController {
     }
 };
 exports.OrdersController = OrdersController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new order (DRAFT)' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_order_dto_1.CreateOrderDto]),
+    __metadata("design:returntype", void 0)
+], OrdersController.prototype, "create", null);
+__decorate([
+    (0, common_1.Patch)(':id/submit'),
+    (0, swagger_1.ApiOperation)({ summary: 'Submit an order by ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('leadId')),
+    __param(2, (0, common_1.Ip)()),
+    __param(3, (0, common_1.Headers)('user-agent')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:returntype", void 0)
+], OrdersController.prototype, "submitById", null);
 __decorate([
     (0, common_1.Get)('cart'),
     (0, swagger_1.ApiOperation)({ summary: 'Get active cart for a customer' }),
@@ -83,10 +109,12 @@ __decorate([
 ], OrdersController.prototype, "removeItem", null);
 __decorate([
     (0, common_1.Post)('cart/submit'),
-    (0, swagger_1.ApiOperation)({ summary: 'Submit cart to create a formal order' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Submit cart (classic endpoint)' }),
     __param(0, (0, common_1.Body)('customerId')),
+    __param(1, (0, common_1.Ip)()),
+    __param(2, (0, common_1.Headers)('user-agent')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", void 0)
 ], OrdersController.prototype, "submit", null);
 __decorate([

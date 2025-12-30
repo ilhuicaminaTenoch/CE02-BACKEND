@@ -4,7 +4,7 @@ import { PaginationDto } from '@/common/dto/pagination.dto';
 export declare class CustomersController {
     private readonly customersService;
     constructor(customersService: CustomersService);
-    create(createCustomerDto: CreateCustomerDto): Promise<{
+    create(createCustomerDto: CreateCustomerDto, ip: string, userAgent: string): Promise<{
         addresses: {
             id: string;
             street: string;
@@ -14,10 +14,10 @@ export declare class CustomersController {
             noInt: string;
             noExt: string;
             settlement: string;
+            customerId: string;
             createdAt: Date;
             updatedAt: Date;
             references: string | null;
-            customerId: string;
         }[];
     } & {
         name: string;
@@ -62,17 +62,17 @@ export declare class CustomersController {
             noInt: string;
             noExt: string;
             settlement: string;
+            customerId: string;
             createdAt: Date;
             updatedAt: Date;
             references: string | null;
-            customerId: string;
         }[];
         leads: {
             description: string;
             id: string;
+            customerId: string;
             createdAt: Date;
             updatedAt: Date;
-            customerId: string;
             serviceType: import(".prisma/client").$Enums.ServiceType;
             budgetEstimated: string | null;
             urgency: import(".prisma/client").$Enums.Urgency;
@@ -82,9 +82,10 @@ export declare class CustomersController {
         }[];
         orders: {
             id: string;
+            customerId: string;
+            leadId: string | null;
             createdAt: Date;
             updatedAt: Date;
-            customerId: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             subtotal: number;
             total: number;
@@ -109,10 +110,10 @@ export declare class CustomersController {
             noInt: string;
             noExt: string;
             settlement: string;
+            customerId: string;
             createdAt: Date;
             updatedAt: Date;
             references: string | null;
-            customerId: string;
         }[];
     } & {
         name: string;

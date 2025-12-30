@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 
 export class CreateAddressDto {
     @ApiProperty({ example: 'Av. Reforma 123' })
@@ -29,11 +29,16 @@ export class CreateAddressDto {
     @IsNotEmpty()
     noInt: string;
 
-    @ApiProperty({ example: 'lt 24', name: 'NoExt' })
+    @ApiProperty({ example: 'lt 24', name: 'noExt', required: false })
     @IsString()
-    @IsNotEmpty()
-    @Expose({ name: 'NoExt' })
+    @IsOptional()
+    @Transform(({ value, obj }) => value || obj.NoExt)
     noExt: string;
+
+    @ApiPropertyOptional({ example: 'lt 24' })
+    @IsString()
+    @IsOptional()
+    NoExt?: string;
 
     @ApiProperty({ example: 'Colonia Centro' })
     @IsString()

@@ -22,8 +22,8 @@ let LeadsController = class LeadsController {
     constructor(leadsService) {
         this.leadsService = leadsService;
     }
-    create(createLeadDto) {
-        return this.leadsService.create(createLeadDto);
+    create(createLeadDto, ip, userAgent) {
+        return this.leadsService.create(createLeadDto, ip, userAgent);
     }
     findAll(query) {
         return this.leadsService.findAll(query);
@@ -34,8 +34,8 @@ let LeadsController = class LeadsController {
             throw new common_1.NotFoundException('Lead not found');
         return lead;
     }
-    update(id, data) {
-        return this.leadsService.update(id, data);
+    update(id, data, ip, userAgent) {
+        return this.leadsService.update(id, data, ip, userAgent);
     }
 };
 exports.LeadsController = LeadsController;
@@ -43,13 +43,15 @@ __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new lead' }),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Ip)()),
+    __param(2, (0, common_1.Headers)('user-agent')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_lead_dto_1.CreateLeadDto]),
+    __metadata("design:paramtypes", [create_lead_dto_1.CreateLeadDto, String, String]),
     __metadata("design:returntype", void 0)
 ], LeadsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'List leads with filters and pagination' }),
+    (0, swagger_1.ApiOperation)({ summary: 'List leads with filtering and pagination' }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lead_query_dto_1.LeadQueryDto]),
@@ -68,8 +70,10 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Update lead data' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Ip)()),
+    __param(3, (0, common_1.Headers)('user-agent')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, Object, String, String]),
     __metadata("design:returntype", void 0)
 ], LeadsController.prototype, "update", null);
 exports.LeadsController = LeadsController = __decorate([
