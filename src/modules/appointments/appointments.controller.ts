@@ -35,7 +35,12 @@ export class AppointmentsController {
 
     @Patch(':id')
     @ApiOperation({ summary: 'Update appointment (e.g. status or date)' })
-    update(@Param('id') id: string, @Body() data: Partial<CreateAppointmentDto>) {
-        return this.appointmentsService.update(id, data);
+    update(
+        @Param('id') id: string,
+        @Body() data: Partial<CreateAppointmentDto>,
+        @Ip() ip: string,
+        @Headers('user-agent') userAgent: string,
+    ) {
+        return this.appointmentsService.update(id, data, ip, userAgent);
     }
 }

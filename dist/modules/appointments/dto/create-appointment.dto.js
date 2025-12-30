@@ -52,4 +52,46 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateAppointmentDto.prototype, "leadId", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'google' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateAppointmentDto.prototype, "utm_source", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'summer_sale' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateAppointmentDto.prototype, "utm_campaign", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'email' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateAppointmentDto.prototype, "utm_medium", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'video_ad' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateAppointmentDto.prototype, "utm_content", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'cctv_mexico' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateAppointmentDto.prototype, "utm_term", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'https://google.com' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateAppointmentDto.prototype, "referrer", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: '/lighting-promo' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateAppointmentDto.prototype, "landingPath", void 0);
 //# sourceMappingURL=create-appointment.dto.js.map

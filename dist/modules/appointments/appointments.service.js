@@ -24,8 +24,9 @@ let AppointmentsService = class AppointmentsService {
         this.leadEventsService = leadEventsService;
     }
     async create(createAppointmentDto, ip, userAgent) {
+        const { utm_source, utm_medium, utm_campaign, utm_content, utm_term, referrer, landingPath, ...appointmentData } = createAppointmentDto;
         const appointment = await this.prisma.appointment.create({
-            data: createAppointmentDto,
+            data: appointmentData,
             include: {
                 customer: {
                     include: {
@@ -45,6 +46,13 @@ let AppointmentsService = class AppointmentsService {
             metadata: {
                 date: appointment.date,
                 mode: appointment.mode,
+                utm_source,
+                utm_medium,
+                utm_campaign,
+                utm_content,
+                utm_term,
+                referrer,
+                landingPath,
             },
             ip,
             userAgent,
@@ -124,11 +132,24 @@ let AppointmentsService = class AppointmentsService {
             include: { customer: true, lead: true },
         });
     }
-    async update(id, data) {
-        return this.prisma.appointment.update({
+    async update(id, data, ip, userAgent) {
+        const { utm_source, utm_medium, utm_campaign, utm_content, utm_term, referrer, landingPath, ...appointmentData } = data;
+        const appointment = await this.prisma.appointment.update({
             where: { id },
-            data,
+            data: appointmentData,
         });
+        await this.leadEventsService.createEvent({
+            customerId: appointment.customerId,
+            leadId: appointment.leadId,
+            type: client_1.LeadEventType.APPOINTMENT_SCHEDULED,
+            metadata: {
+                action: 'APPOINTMENT_UPDATED',
+                ...data,
+            },
+            ip,
+            userAgent,
+        });
+        return appointment;
     }
 };
 exports.AppointmentsService = AppointmentsService;

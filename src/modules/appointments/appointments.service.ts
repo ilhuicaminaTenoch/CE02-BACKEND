@@ -17,8 +17,19 @@ export class AppointmentsService {
     ) { }
 
     async create(createAppointmentDto: CreateAppointmentDto, ip?: string, userAgent?: string) {
+        const {
+            utm_source,
+            utm_medium,
+            utm_campaign,
+            utm_content,
+            utm_term,
+            referrer,
+            landingPath,
+            ...appointmentData
+        } = createAppointmentDto;
+
         const appointment = await this.prisma.appointment.create({
-            data: createAppointmentDto as unknown as Prisma.AppointmentCreateInput,
+            data: appointmentData as unknown as Prisma.AppointmentCreateInput,
             include: {
                 customer: {
                     include: {
@@ -40,6 +51,13 @@ export class AppointmentsService {
             metadata: {
                 date: appointment.date,
                 mode: appointment.mode,
+                utm_source,
+                utm_medium,
+                utm_campaign,
+                utm_content,
+                utm_term,
+                referrer,
+                landingPath,
             },
             ip,
             userAgent,
@@ -136,10 +154,36 @@ export class AppointmentsService {
         });
     }
 
-    async update(id: string, data: Partial<CreateAppointmentDto>) {
-        return this.prisma.appointment.update({
+    async update(id: string, data: Partial<CreateAppointmentDto>, ip?: string, userAgent?: string) {
+        const {
+            utm_source,
+            utm_medium,
+            utm_campaign,
+            utm_content,
+            utm_term,
+            referrer,
+            landingPath,
+            ...appointmentData
+        } = data;
+
+        const appointment = await this.prisma.appointment.update({
             where: { id },
-            data,
+            data: appointmentData as unknown as Prisma.AppointmentUpdateInput,
         });
+
+        // Optional: Log update event
+        await this.leadEventsService.createEvent({
+            customerId: appointment.customerId,
+            leadId: appointment.leadId,
+            type: LeadEventType.APPOINTMENT_SCHEDULED, // Or a generic UPDATED event if exists
+            metadata: {
+                action: 'APPOINTMENT_UPDATED',
+                ...data,
+            },
+            ip,
+            userAgent,
+        });
+
+        return appointment;
     }
 }

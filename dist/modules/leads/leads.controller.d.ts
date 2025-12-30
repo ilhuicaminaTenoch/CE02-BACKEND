@@ -6,52 +6,52 @@ export declare class LeadsController {
     constructor(leadsService: LeadsService);
     create(createLeadDto: CreateLeadDto, ip: string, userAgent: string): Promise<{
         customer: {
-            name: string;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
             email: string;
             lastName: string;
             phone: string;
             contactMethod: import(".prisma/client").$Enums.ContactMethod;
-            createdAt: Date;
-            updatedAt: Date;
         };
     } & {
-        description: string;
-        id: string;
-        customerId: string;
-        createdAt: Date;
-        updatedAt: Date;
         serviceType: import(".prisma/client").$Enums.ServiceType;
+        description: string;
         budgetEstimated: string | null;
         urgency: import(".prisma/client").$Enums.Urgency;
         propertyType: import(".prisma/client").$Enums.PropertyType;
         numCameras: number | null;
         numAccessPoints: number | null;
+        customerId: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     findAll(query: LeadQueryDto): Promise<{
         items: ({
             customer: {
-                name: string;
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
                 email: string;
                 lastName: string;
                 phone: string;
                 contactMethod: import(".prisma/client").$Enums.ContactMethod;
-                createdAt: Date;
-                updatedAt: Date;
             };
         } & {
-            description: string;
-            id: string;
-            customerId: string;
-            createdAt: Date;
-            updatedAt: Date;
             serviceType: import(".prisma/client").$Enums.ServiceType;
+            description: string;
             budgetEstimated: string | null;
             urgency: import(".prisma/client").$Enums.Urgency;
             propertyType: import(".prisma/client").$Enums.PropertyType;
             numCameras: number | null;
             numAccessPoints: number | null;
+            customerId: string;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
         })[];
         meta: {
             total: number;
@@ -62,50 +62,50 @@ export declare class LeadsController {
     }>;
     findOne(id: string): Promise<{
         customer: {
-            name: string;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
             email: string;
             lastName: string;
             phone: string;
             contactMethod: import(".prisma/client").$Enums.ContactMethod;
-            createdAt: Date;
-            updatedAt: Date;
         };
         appointments: {
-            id: string;
             customerId: string;
-            leadId: string | null;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
-            status: import(".prisma/client").$Enums.AppointmentStatus;
             date: Date;
+            status: import(".prisma/client").$Enums.AppointmentStatus;
+            leadId: string | null;
             mode: import(".prisma/client").$Enums.AppointmentMode;
             comments: string | null;
         }[];
     } & {
-        description: string;
-        id: string;
-        customerId: string;
-        createdAt: Date;
-        updatedAt: Date;
         serviceType: import(".prisma/client").$Enums.ServiceType;
+        description: string;
         budgetEstimated: string | null;
         urgency: import(".prisma/client").$Enums.Urgency;
         propertyType: import(".prisma/client").$Enums.PropertyType;
         numCameras: number | null;
         numAccessPoints: number | null;
+        customerId: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     update(id: string, data: Partial<CreateLeadDto>, ip: string, userAgent: string): Promise<{
-        description: string;
-        id: string;
-        customerId: string;
-        createdAt: Date;
-        updatedAt: Date;
         serviceType: import(".prisma/client").$Enums.ServiceType;
+        description: string;
         budgetEstimated: string | null;
         urgency: import(".prisma/client").$Enums.Urgency;
         propertyType: import(".prisma/client").$Enums.PropertyType;
         numCameras: number | null;
         numAccessPoints: number | null;
+        customerId: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }

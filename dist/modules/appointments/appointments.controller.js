@@ -34,8 +34,8 @@ let AppointmentsController = class AppointmentsController {
             throw new common_1.NotFoundException('Appointment not found');
         return appointment;
     }
-    update(id, data) {
-        return this.appointmentsService.update(id, data);
+    update(id, data, ip, userAgent) {
+        return this.appointmentsService.update(id, data, ip, userAgent);
     }
 };
 exports.AppointmentsController = AppointmentsController;
@@ -70,8 +70,10 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Update appointment (e.g. status or date)' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Ip)()),
+    __param(3, (0, common_1.Headers)('user-agent')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, Object, String, String]),
     __metadata("design:returntype", void 0)
 ], AppointmentsController.prototype, "update", null);
 exports.AppointmentsController = AppointmentsController = __decorate([

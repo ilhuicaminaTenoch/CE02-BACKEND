@@ -9,22 +9,22 @@ export declare class CustomersService {
     create(createCustomerDto: CreateCustomerDto, ip?: string, userAgent?: string): Promise<{
         addresses: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             street: string;
-            noInt: string;
-            noExt: string;
-            settlement: string;
             city: string;
             state: string;
             zipCode: string | null;
-            references: string | null;
+            noInt: string;
+            noExt: string;
+            settlement: string;
             customerId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            references: string | null;
         }[];
     } & {
+        name: string;
         id: string;
         email: string;
-        name: string;
         lastName: string;
         phone: string;
         contactMethod: import(".prisma/client").$Enums.ContactMethod;
@@ -38,9 +38,9 @@ export declare class CustomersService {
                 orders: number;
             };
         } & {
+            name: string;
             id: string;
             email: string;
-            name: string;
             lastName: string;
             phone: string;
             contactMethod: import(".prisma/client").$Enums.ContactMethod;
@@ -57,25 +57,25 @@ export declare class CustomersService {
     findOne(id: string): Promise<{
         addresses: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             street: string;
-            noInt: string;
-            noExt: string;
-            settlement: string;
             city: string;
             state: string;
             zipCode: string | null;
-            references: string | null;
+            noInt: string;
+            noExt: string;
+            settlement: string;
             customerId: string;
-        }[];
-        leads: {
-            id: string;
             createdAt: Date;
             updatedAt: Date;
-            customerId: string;
-            serviceType: import(".prisma/client").$Enums.ServiceType;
+            references: string | null;
+        }[];
+        leads: {
             description: string;
+            id: string;
+            customerId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            serviceType: import(".prisma/client").$Enums.ServiceType;
             budgetEstimated: string | null;
             urgency: import(".prisma/client").$Enums.Urgency;
             propertyType: import(".prisma/client").$Enums.PropertyType;
@@ -84,18 +84,18 @@ export declare class CustomersService {
         }[];
         orders: {
             id: string;
+            customerId: string;
+            leadId: string | null;
             createdAt: Date;
             updatedAt: Date;
-            customerId: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             subtotal: number;
             total: number;
-            leadId: string | null;
         }[];
     } & {
+        name: string;
         id: string;
         email: string;
-        name: string;
         lastName: string;
         phone: string;
         contactMethod: import(".prisma/client").$Enums.ContactMethod;
@@ -105,22 +105,22 @@ export declare class CustomersService {
     update(id: string, updateDto: Partial<CreateCustomerDto>): Promise<{
         addresses: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             street: string;
-            noInt: string;
-            noExt: string;
-            settlement: string;
             city: string;
             state: string;
             zipCode: string | null;
-            references: string | null;
+            noInt: string;
+            noExt: string;
+            settlement: string;
             customerId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            references: string | null;
         }[];
     } & {
+        name: string;
         id: string;
         email: string;
-        name: string;
         lastName: string;
         phone: string;
         contactMethod: import(".prisma/client").$Enums.ContactMethod;

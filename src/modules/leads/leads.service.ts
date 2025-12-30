@@ -13,8 +13,19 @@ export class LeadsService {
     ) { }
 
     async create(createLeadDto: CreateLeadDto, ip?: string, userAgent?: string) {
+        const {
+            utm_source,
+            utm_medium,
+            utm_campaign,
+            utm_content,
+            utm_term,
+            referrer,
+            landingPath,
+            ...leadData
+        } = createLeadDto;
+
         const lead = await this.prisma.lead.create({
-            data: createLeadDto as unknown as Prisma.LeadCreateInput,
+            data: leadData as unknown as Prisma.LeadCreateInput,
             include: { customer: true },
         });
 
@@ -26,6 +37,13 @@ export class LeadsService {
                 serviceType: lead.serviceType,
                 propertyType: lead.propertyType,
                 urgency: lead.urgency,
+                utm_source,
+                utm_medium,
+                utm_campaign,
+                utm_content,
+                utm_term,
+                referrer,
+                landingPath,
             },
             ip,
             userAgent,
@@ -78,9 +96,20 @@ export class LeadsService {
     }
 
     async update(id: string, data: Partial<CreateLeadDto>, ip?: string, userAgent?: string) {
+        const {
+            utm_source,
+            utm_medium,
+            utm_campaign,
+            utm_content,
+            utm_term,
+            referrer,
+            landingPath,
+            ...leadData
+        } = data;
+
         const lead = await this.prisma.lead.update({
             where: { id },
-            data: data as unknown as Prisma.LeadUpdateInput,
+            data: leadData as unknown as Prisma.LeadUpdateInput,
         });
 
         await this.leadEventsService.createEvent({
