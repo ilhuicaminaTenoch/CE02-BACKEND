@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const core_1 = require("@nestjs/core");
 const health_controller_1 = require("./modules/health/health.controller");
 const prisma_service_1 = require("./common/prisma/prisma.service");
 const products_module_1 = require("./modules/products/products.module");
@@ -18,6 +19,10 @@ const appointments_module_1 = require("./modules/appointments/appointments.modul
 const orders_module_1 = require("./modules/orders/orders.module");
 const syscom_module_1 = require("./modules/syscom/syscom.module");
 const leadevents_module_1 = require("./modules/leadevents/leadevents.module");
+const users_module_1 = require("./modules/users/users.module");
+const auth_module_1 = require("./modules/auth/auth.module");
+const jwt_auth_guard_1 = require("./common/guards/jwt-auth.guard");
+const roles_guard_1 = require("./common/guards/roles.guard");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -35,9 +40,21 @@ exports.AppModule = AppModule = __decorate([
             appointments_module_1.AppointmentsModule,
             orders_module_1.OrdersModule,
             leadevents_module_1.LeadEventsModule,
+            users_module_1.UsersModule,
+            auth_module_1.AuthModule,
         ],
         controllers: [health_controller_1.HealthController],
-        providers: [prisma_service_1.PrismaService],
+        providers: [
+            prisma_service_1.PrismaService,
+            {
+                provide: core_1.APP_GUARD,
+                useClass: jwt_auth_guard_1.JwtAuthGuard,
+            },
+            {
+                provide: core_1.APP_GUARD,
+                useClass: roles_guard_1.RolesGuard,
+            },
+        ],
         exports: [prisma_service_1.PrismaService],
     })
 ], AppModule);

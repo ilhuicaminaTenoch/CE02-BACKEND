@@ -20,6 +20,7 @@ async function bootstrap() {
         .setTitle('Prograde CCTV & Automation API')
         .setDescription('API for managing customers, leads, appointments, and orders.')
         .setVersion('1.0')
+        .addBearerAuth()
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
     swagger_1.SwaggerModule.setup('api/docs', app, document);
