@@ -18,6 +18,7 @@ const swagger_1 = require("@nestjs/swagger");
 const leads_service_1 = require("./leads.service");
 const create_lead_dto_1 = require("./dto/create-lead.dto");
 const lead_query_dto_1 = require("./dto/lead-query.dto");
+const public_decorator_1 = require("../../common/decorators/public.decorator");
 let LeadsController = class LeadsController {
     constructor(leadsService) {
         this.leadsService = leadsService;
@@ -40,8 +41,9 @@ let LeadsController = class LeadsController {
 };
 exports.LeadsController = LeadsController;
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a new lead' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new lead (Public for Funnel)' }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Ip)()),
     __param(2, (0, common_1.Headers)('user-agent')),
@@ -78,6 +80,7 @@ __decorate([
 ], LeadsController.prototype, "update", null);
 exports.LeadsController = LeadsController = __decorate([
     (0, swagger_1.ApiTags)('Leads'),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('leads'),
     __metadata("design:paramtypes", [leads_service_1.LeadsService])
 ], LeadsController);

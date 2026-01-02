@@ -18,6 +18,7 @@ const swagger_1 = require("@nestjs/swagger");
 const customers_service_1 = require("./customers.service");
 const create_customer_dto_1 = require("./dto/create-customer.dto");
 const pagination_dto_1 = require("../../common/dto/pagination.dto");
+const public_decorator_1 = require("../../common/decorators/public.decorator");
 let CustomersController = class CustomersController {
     constructor(customersService) {
         this.customersService = customersService;
@@ -40,8 +41,9 @@ let CustomersController = class CustomersController {
 };
 exports.CustomersController = CustomersController;
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a new customer' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new customer (Public for Funnel)' }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Ip)()),
     __param(2, (0, common_1.Headers)('user-agent')),
@@ -76,6 +78,7 @@ __decorate([
 ], CustomersController.prototype, "update", null);
 exports.CustomersController = CustomersController = __decorate([
     (0, swagger_1.ApiTags)('Customers'),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('customers'),
     __metadata("design:paramtypes", [customers_service_1.CustomersService])
 ], CustomersController);

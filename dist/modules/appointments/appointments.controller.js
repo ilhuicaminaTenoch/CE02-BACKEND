@@ -18,6 +18,7 @@ const swagger_1 = require("@nestjs/swagger");
 const appointments_service_1 = require("./appointments.service");
 const create_appointment_dto_1 = require("./dto/create-appointment.dto");
 const appointment_query_dto_1 = require("./dto/appointment-query.dto");
+const public_decorator_1 = require("../../common/decorators/public.decorator");
 let AppointmentsController = class AppointmentsController {
     constructor(appointmentsService) {
         this.appointmentsService = appointmentsService;
@@ -40,8 +41,9 @@ let AppointmentsController = class AppointmentsController {
 };
 exports.AppointmentsController = AppointmentsController;
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Schedule a new appointment' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Schedule a new appointment (Public for Funnel)' }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Ip)()),
     __param(2, (0, common_1.Headers)('user-agent')),
@@ -78,6 +80,7 @@ __decorate([
 ], AppointmentsController.prototype, "update", null);
 exports.AppointmentsController = AppointmentsController = __decorate([
     (0, swagger_1.ApiTags)('Appointments'),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('appointments'),
     __metadata("design:paramtypes", [appointments_service_1.AppointmentsService])
 ], AppointmentsController);

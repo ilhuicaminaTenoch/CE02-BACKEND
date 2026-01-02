@@ -1,9 +1,12 @@
 import { Controller, Get, Param, Query, NotFoundException } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
 import { ProductQueryDto } from './dto/product-query.dto';
+import { Public } from '@/common/decorators/public.decorator';
 
 @ApiTags('Products')
+@ApiBearerAuth()
+@Public()
 @Controller('products')
 export class ProductsController {
     constructor(private readonly productsService: ProductsService) { }

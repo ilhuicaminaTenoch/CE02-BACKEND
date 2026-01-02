@@ -1,16 +1,19 @@
 import { Controller, Get, Post, Body, Param, Query, Patch, NotFoundException, Ip, Headers } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AppointmentQueryDto } from './dto/appointment-query.dto';
+import { Public } from '@/common/decorators/public.decorator';
 
 @ApiTags('Appointments')
+@ApiBearerAuth()
 @Controller('appointments')
 export class AppointmentsController {
     constructor(private readonly appointmentsService: AppointmentsService) { }
 
+    @Public()
     @Post()
-    @ApiOperation({ summary: 'Schedule a new appointment' })
+    @ApiOperation({ summary: 'Schedule a new appointment (Public for Funnel)' })
     create(
         @Body() createAppointmentDto: CreateAppointmentDto,
         @Ip() ip: string,

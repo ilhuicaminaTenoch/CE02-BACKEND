@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const products_service_1 = require("./products.service");
 const product_query_dto_1 = require("./dto/product-query.dto");
+const public_decorator_1 = require("../../common/decorators/public.decorator");
 let ProductsController = class ProductsController {
     constructor(productsService) {
         this.productsService = productsService;
@@ -52,6 +53,8 @@ __decorate([
 ], ProductsController.prototype, "findOne", null);
 exports.ProductsController = ProductsController = __decorate([
     (0, swagger_1.ApiTags)('Products'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, public_decorator_1.Public)(),
     (0, common_1.Controller)('products'),
     __metadata("design:paramtypes", [products_service_1.ProductsService])
 ], ProductsController);
