@@ -202,6 +202,7 @@ model User {
   id           String    @id @default(uuid())
   email        String    @unique
   passwordHash String
+  fullName     String?
   role         UserRole  @default(ADMIN)
   isActive     Boolean   @default(true)
   createdAt    DateTime  @default(now())
