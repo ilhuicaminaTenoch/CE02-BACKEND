@@ -89,6 +89,7 @@ export declare class CustomersController {
             status: import(".prisma/client").$Enums.OrderStatus;
             subtotal: number;
             total: number;
+            laborCost: number | null;
         }[];
     } & {
         name: string;

@@ -33,11 +33,14 @@ export declare class OrdersService {
         status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
         total: number;
+        laborCost: number | null;
     }>;
     addItem(addItemDto: AddItemDto): Promise<any>;
     updateItem(itemId: string, updateItemDto: UpdateItemDto): Promise<any>;
     removeItem(itemId: string): Promise<any>;
     submitOrder(customerId: string, ip?: string, userAgent?: string): Promise<any>;
+    updateLaborCost(id: string, laborCost: number): Promise<any>;
+    quoteOrder(id: string, laborCost?: number): Promise<any>;
     private enrichAndSendEmail;
     findAll(query: OrderQueryDto): Promise<{
         items: ({
@@ -70,6 +73,7 @@ export declare class OrdersService {
             status: import(".prisma/client").$Enums.OrderStatus;
             subtotal: number;
             total: number;
+            laborCost: number | null;
         })[];
         meta: {
             total: number;
@@ -108,6 +112,7 @@ export declare class OrdersService {
         status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
         total: number;
+        laborCost: number | null;
     }>;
     private recalculateTotals;
 }

@@ -19,6 +19,11 @@ const orders_service_1 = require("./orders.service");
 const add_item_dto_1 = require("./dto/add-item.dto");
 const order_query_dto_1 = require("./dto/order-query.dto");
 const create_order_dto_1 = require("./dto/create-order.dto");
+const update_labor_cost_dto_1 = require("./dto/update-labor-cost.dto");
+const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
+const roles_guard_1 = require("../../common/guards/roles.guard");
+const roles_decorator_1 = require("../../common/decorators/roles.decorator");
+const client_1 = require("@prisma/client");
 let OrdersController = class OrdersController {
     constructor(ordersService) {
         this.ordersService = ordersService;
@@ -52,6 +57,12 @@ let OrdersController = class OrdersController {
         if (!order)
             throw new common_1.NotFoundException('Order not found');
         return order;
+    }
+    updateLaborCost(id, dto) {
+        return this.ordersService.updateLaborCost(id, dto.laborCost);
+    }
+    quoteOrder(id, dto) {
+        return this.ordersService.quoteOrder(id, dto.laborCost);
     }
 };
 exports.OrdersController = OrdersController;
@@ -133,6 +144,28 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Patch)(':id/labor-cost'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.UserRole.ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: 'Update labor cost for an order (ADMIN only)' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, update_labor_cost_dto_1.UpdateLaborCostDto]),
+    __metadata("design:returntype", void 0)
+], OrdersController.prototype, "updateLaborCost", null);
+__decorate([
+    (0, common_1.Patch)(':id/quote'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.UserRole.ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: 'Transition order from SUBMITTED to QUOTED (ADMIN only)' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], OrdersController.prototype, "quoteOrder", null);
 exports.OrdersController = OrdersController = __decorate([
     (0, swagger_1.ApiTags)('Orders & Cart'),
     (0, swagger_1.ApiBearerAuth)(),

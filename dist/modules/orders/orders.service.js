@@ -198,6 +198,60 @@ let OrdersService = class OrdersService {
         }
         return this.submitOrderById(cart.id, undefined, ip, userAgent);
     }
+    async updateLaborCost(id, laborCost) {
+        const order = await this.prisma.order.findUnique({ where: { id } });
+        if (!order)
+            throw new common_1.NotFoundException('Order not found');
+        return this.prisma.$transaction(async (tx) => {
+            await tx.order.update({
+                where: { id },
+                data: { laborCost },
+            });
+            return this.recalculateTotals(id, tx);
+        });
+    }
+    async quoteOrder(id, laborCost) {
+        return this.prisma.$transaction(async (tx) => {
+            const order = await tx.order.findUnique({
+                where: { id },
+            });
+            if (!order)
+                throw new common_1.NotFoundException('Order not found');
+            if (order.status !== client_1.OrderStatus.SUBMITTED) {
+                if (order.status === client_1.OrderStatus.QUOTED)
+                    return order;
+                throw new common_1.ConflictException('Invalid status transition. Order must be SUBMITTED to be QUOTED.');
+            }
+            let finalLaborCost = order.laborCost;
+            if (laborCost !== undefined && laborCost !== null) {
+                await tx.order.update({
+                    where: { id },
+                    data: { laborCost },
+                });
+                finalLaborCost = laborCost;
+            }
+            if (finalLaborCost === null || finalLaborCost === undefined) {
+                throw new common_1.BadRequestException('laborCost must be set before quoting a SUBMITTED order');
+            }
+            const updatedOrder = await tx.order.update({
+                where: { id },
+                data: { status: client_1.OrderStatus.QUOTED },
+                include: { items: true, customer: true },
+            });
+            const finalOrder = await this.recalculateTotals(id, tx);
+            await this.leadEventsService.createEvent({
+                customerId: updatedOrder.customerId,
+                leadId: updatedOrder.leadId || undefined,
+                type: client_1.LeadEventType.ORDER_QUOTED,
+                metadata: {
+                    total: finalOrder.total,
+                    laborCost: finalOrder.laborCost,
+                    orderId: finalOrder.id,
+                },
+            });
+            return finalOrder;
+        });
+    }
     async enrichAndSendEmail(order) {
         try {
             const enrichedItems = await Promise.all(order.items.map(async (item) => {
@@ -250,13 +304,19 @@ let OrdersService = class OrdersService {
         });
     }
     async recalculateTotals(orderId, tx) {
-        const items = await tx.orderItem.findMany({ where: { orderId } });
-        const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
-        const total = subtotal;
+        const order = await tx.order.findUnique({
+            where: { id: orderId },
+            include: { items: true },
+        });
+        if (!order)
+            throw new common_1.NotFoundException('Order not found');
+        const subtotal = order.items.reduce((sum, item) => sum + item.lineTotal, 0);
+        const laborCost = order.laborCost ?? 0;
+        const total = subtotal + laborCost;
         return tx.order.update({
             where: { id: orderId },
             data: { subtotal, total },
-            include: { items: true },
+            include: { items: true, customer: true },
         });
     }
 };

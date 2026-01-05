@@ -132,6 +132,7 @@ model Order {
   status     OrderStatus @default(DRAFT)
   subtotal   Float       @default(0)
   total      Float       @default(0)
+  laborCost  Float?      @map("labor_cost")
   customer   Customer    @relation(fields: [customerId], references: [id])
   customerId String
   leadId     String?

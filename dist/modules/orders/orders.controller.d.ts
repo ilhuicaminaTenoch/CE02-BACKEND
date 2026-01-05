@@ -2,6 +2,7 @@ import { OrdersService } from './orders.service';
 import { AddItemDto, UpdateItemDto } from './dto/add-item.dto';
 import { OrderQueryDto } from './dto/order-query.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { UpdateLaborCostDto } from './dto/update-labor-cost.dto';
 export declare class OrdersController {
     private readonly ordersService;
     constructor(ordersService: OrdersService);
@@ -27,6 +28,7 @@ export declare class OrdersController {
         status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
         total: number;
+        laborCost: number | null;
     }>;
     addItem(addItemDto: AddItemDto): Promise<any>;
     updateItem(itemId: string, updateItemDto: UpdateItemDto): Promise<any>;
@@ -63,6 +65,7 @@ export declare class OrdersController {
             status: import(".prisma/client").$Enums.OrderStatus;
             subtotal: number;
             total: number;
+            laborCost: number | null;
         })[];
         meta: {
             total: number;
@@ -101,5 +104,8 @@ export declare class OrdersController {
         status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
         total: number;
+        laborCost: number | null;
     }>;
+    updateLaborCost(id: string, dto: UpdateLaborCostDto): Promise<any>;
+    quoteOrder(id: string, dto: Partial<UpdateLaborCostDto>): Promise<any>;
 }
