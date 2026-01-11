@@ -13,22 +13,22 @@ export declare class OrdersController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            productId: string;
             quantity: number;
             unitPrice: number;
             lineTotal: number;
+            productId: string;
             orderId: string;
         }[];
     } & {
-        id: string;
         customerId: string;
         leadId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
+        id: string;
         status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
         total: number;
         laborCost: number | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     addItem(addItemDto: AddItemDto): Promise<any>;
     updateItem(itemId: string, updateItemDto: UpdateItemDto): Promise<any>;
@@ -37,35 +37,35 @@ export declare class OrdersController {
     findAll(query: OrderQueryDto): Promise<{
         items: ({
             customer: {
-                name: string;
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
                 email: string;
                 lastName: string;
                 phone: string;
                 contactMethod: import(".prisma/client").$Enums.ContactMethod;
-                createdAt: Date;
-                updatedAt: Date;
             };
             items: {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                productId: string;
                 quantity: number;
                 unitPrice: number;
                 lineTotal: number;
+                productId: string;
                 orderId: string;
             }[];
         } & {
-            id: string;
             customerId: string;
             leadId: string | null;
-            createdAt: Date;
-            updatedAt: Date;
+            id: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             subtotal: number;
             total: number;
             laborCost: number | null;
+            createdAt: Date;
+            updatedAt: Date;
         })[];
         meta: {
             total: number;
@@ -76,35 +76,35 @@ export declare class OrdersController {
     }>;
     findOne(id: string): Promise<{
         customer: {
-            name: string;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
             email: string;
             lastName: string;
             phone: string;
             contactMethod: import(".prisma/client").$Enums.ContactMethod;
-            createdAt: Date;
-            updatedAt: Date;
         };
         items: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            productId: string;
             quantity: number;
             unitPrice: number;
             lineTotal: number;
+            productId: string;
             orderId: string;
         }[];
     } & {
-        id: string;
         customerId: string;
         leadId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
+        id: string;
         status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
         total: number;
         laborCost: number | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     updateLaborCost(id: string, dto: UpdateLaborCostDto): Promise<any>;
     quoteOrder(id: string, dto: Partial<UpdateLaborCostDto>): Promise<any>;

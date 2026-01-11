@@ -316,12 +316,36 @@ export class OrdersService {
     }
 
     async findAll(query: OrderQueryDto) {
-        const { page, limit, status, customerId } = query;
+        const { page, limit, status, customerId, search } = query;
         const skip = (page - 1) * limit;
 
-        const where = {
+        const normalized = (search ?? '').trim().replace(/\s+/g, ' ').slice(0, 60);
+        const tokens = normalized ? normalized.split(' ') : [];
+
+        const customerSearchWhere: Prisma.OrderWhereInput =
+            tokens.length > 0
+                ? {
+                    customer: {
+                        AND: tokens.map((t) => {
+                            const digits = t.replace(/\D/g, '');
+                            return {
+                                OR: [
+                                    { name: { contains: t, mode: 'insensitive' } },
+                                    { lastName: { contains: t, mode: 'insensitive' } },
+                                    { email: { contains: t, mode: 'insensitive' } },
+                                    { phone: { contains: t } },
+                                    ...(digits && digits !== t ? [{ phone: { contains: digits } }] : []),
+                                ],
+                            };
+                        }),
+                    },
+                }
+                : {};
+
+        const where: Prisma.OrderWhereInput = {
             ...(status && { status }),
             ...(customerId && { customerId }),
+            ...customerSearchWhere,
         };
 
         const [items, total] = await Promise.all([

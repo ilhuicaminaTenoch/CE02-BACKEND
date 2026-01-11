@@ -29,4 +29,10 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], OrderQueryDto.prototype, "customerId", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'Search by customer name / lastName' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], OrderQueryDto.prototype, "search", void 0);
 //# sourceMappingURL=order-query.dto.js.map
