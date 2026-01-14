@@ -132,6 +132,7 @@ model Order {
   status     OrderStatus @default(DRAFT)
   subtotal   Float       @default(0)
   total      Float       @default(0)
+  laborCost  Float?      @map("labor_cost")
   customer   Customer    @relation(fields: [customerId], references: [id])
   customerId String
   leadId     String?
@@ -190,4 +191,23 @@ model LeadEvent {
   @@index([leadId, createdAt])
   @@index([type, createdAt])
   @@map("lead_events")
+}
+
+enum UserRole {
+  ADMIN
+  TECH
+  SALES
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  fullName     String?
+  role         UserRole  @default(ADMIN)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("users")
 }

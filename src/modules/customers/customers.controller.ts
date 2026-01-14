@@ -1,16 +1,21 @@
 import { Controller, Get, Post, Body, Param, Query, Patch, NotFoundException, Ip, Headers } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
+import { Public } from '@/common/decorators/public.decorator';
+import { Roles } from '@/common/decorators/roles.decorator';
+import { UserRole } from '@prisma/client';
 
 @ApiTags('Customers')
+@ApiBearerAuth()
 @Controller('customers')
 export class CustomersController {
     constructor(private readonly customersService: CustomersService) { }
 
+    @Public()
     @Post()
-    @ApiOperation({ summary: 'Create a new customer' })
+    @ApiOperation({ summary: 'Create a new customer (Public for Funnel)' })
     create(
         @Body() createCustomerDto: CreateCustomerDto,
         @Ip() ip: string,

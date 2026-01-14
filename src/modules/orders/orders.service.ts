@@ -227,6 +227,71 @@ export class OrdersService {
         return this.submitOrderById(cart.id, undefined, ip, userAgent);
     }
 
+    async updateLaborCost(id: string, laborCost: number) {
+        const order = await this.prisma.order.findUnique({ where: { id } });
+        if (!order) throw new NotFoundException('Order not found');
+
+        return this.prisma.$transaction(async (tx) => {
+            await (tx as any).order.update({
+                where: { id },
+                data: { laborCost },
+            });
+            return this.recalculateTotals(id, tx);
+        });
+    }
+
+    async quoteOrder(id: string, laborCost?: number) {
+        return this.prisma.$transaction(async (tx) => {
+            const order = await (tx as any).order.findUnique({
+                where: { id },
+            });
+
+            if (!order) throw new NotFoundException('Order not found');
+            if (order.status !== OrderStatus.SUBMITTED) {
+                if (order.status === OrderStatus.QUOTED) return order;
+                throw new ConflictException('Invalid status transition. Order must be SUBMITTED to be QUOTED.');
+            }
+
+            // Update laborCost if provided in request
+            let finalLaborCost = order.laborCost;
+            if (laborCost !== undefined && laborCost !== null) {
+                await (tx as any).order.update({
+                    where: { id },
+                    data: { laborCost },
+                });
+                finalLaborCost = laborCost;
+            }
+
+            // Validation: laborCost must not be null
+            if (finalLaborCost === null || finalLaborCost === undefined) {
+                throw new BadRequestException('laborCost must be set before quoting a SUBMITTED order');
+            }
+
+            const updatedOrder = await (tx as any).order.update({
+                where: { id },
+                data: { status: OrderStatus.QUOTED },
+                include: { items: true, customer: true },
+            });
+
+            // Recalculate to ensure total is correct with laborCost and status
+            const finalOrder = await this.recalculateTotals(id, tx);
+
+            // Register LeadEvent
+            await this.leadEventsService.createEvent({
+                customerId: updatedOrder.customerId,
+                leadId: updatedOrder.leadId || undefined,
+                type: LeadEventType.ORDER_QUOTED,
+                metadata: {
+                    total: finalOrder.total,
+                    laborCost: finalOrder.laborCost,
+                    orderId: finalOrder.id,
+                },
+            });
+
+            return finalOrder;
+        });
+    }
+
     private async enrichAndSendEmail(order: any) {
         try {
             // Enrich items with product titles from Syscom
@@ -251,12 +316,36 @@ export class OrdersService {
     }
 
     async findAll(query: OrderQueryDto) {
-        const { page, limit, status, customerId } = query;
+        const { page, limit, status, customerId, search } = query;
         const skip = (page - 1) * limit;
 
-        const where = {
+        const normalized = (search ?? '').trim().replace(/\s+/g, ' ').slice(0, 60);
+        const tokens = normalized ? normalized.split(' ') : [];
+
+        const customerSearchWhere: Prisma.OrderWhereInput =
+            tokens.length > 0
+                ? {
+                    customer: {
+                        AND: tokens.map((t) => {
+                            const digits = t.replace(/\D/g, '');
+                            return {
+                                OR: [
+                                    { name: { contains: t, mode: 'insensitive' } },
+                                    { lastName: { contains: t, mode: 'insensitive' } },
+                                    { email: { contains: t, mode: 'insensitive' } },
+                                    { phone: { contains: t } },
+                                    ...(digits && digits !== t ? [{ phone: { contains: digits } }] : []),
+                                ],
+                            };
+                        }),
+                    },
+                }
+                : {};
+
+        const where: Prisma.OrderWhereInput = {
             ...(status && { status }),
             ...(customerId && { customerId }),
+            ...customerSearchWhere,
         };
 
         const [items, total] = await Promise.all([
@@ -289,14 +378,21 @@ export class OrdersService {
     }
 
     private async recalculateTotals(orderId: string, tx: Prisma.TransactionClient) {
-        const items = await (tx as any).orderItem.findMany({ where: { orderId } });
-        const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
-        const total = subtotal; // No tax/discount for MVP
+        const order = await (tx as any).order.findUnique({
+            where: { id: orderId },
+            include: { items: true },
+        });
+
+        if (!order) throw new NotFoundException('Order not found');
+
+        const subtotal = order.items.reduce((sum, item) => sum + item.lineTotal, 0);
+        const laborCost = order.laborCost ?? 0;
+        const total = subtotal + laborCost;
 
         return (tx as any).order.update({
             where: { id: orderId },
             data: { subtotal, total },
-            include: { items: true },
+            include: { items: true, customer: true },
         });
     }
 }

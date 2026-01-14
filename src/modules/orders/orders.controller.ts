@@ -1,11 +1,17 @@
-import { Controller, Get, Post, Body, Param, Query, Patch, Delete, NotFoundException, Ip, Headers } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Query, Patch, Delete, NotFoundException, Ip, Headers, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { AddItemDto, UpdateItemDto } from './dto/add-item.dto';
 import { OrderQueryDto } from './dto/order-query.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { UpdateLaborCostDto } from './dto/update-labor-cost.dto';
+import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { RolesGuard } from '@/common/guards/roles.guard';
+import { Roles } from '@/common/decorators/roles.decorator';
+import { UserRole } from '@prisma/client';
 
 @ApiTags('Orders & Cart')
+@ApiBearerAuth()
 @Controller('orders')
 export class OrdersController {
     constructor(private readonly ordersService: OrdersService) { }
@@ -73,5 +79,27 @@ export class OrdersController {
         const order = await this.ordersService.findOne(id);
         if (!order) throw new NotFoundException('Order not found');
         return order;
+    }
+
+    @Patch(':id/labor-cost')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiOperation({ summary: 'Update labor cost for an order (ADMIN only)' })
+    updateLaborCost(
+        @Param('id') id: string,
+        @Body() dto: UpdateLaborCostDto,
+    ) {
+        return this.ordersService.updateLaborCost(id, dto.laborCost);
+    }
+
+    @Patch(':id/quote')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiOperation({ summary: 'Transition order from SUBMITTED to QUOTED (ADMIN only)' })
+    quoteOrder(
+        @Param('id') id: string,
+        @Body() dto: Partial<UpdateLaborCostDto>,
+    ) {
+        return this.ordersService.quoteOrder(id, dto.laborCost);
     }
 }
