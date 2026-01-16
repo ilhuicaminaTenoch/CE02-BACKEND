@@ -126,4 +126,37 @@ export class LeadsService {
 
         return lead;
     }
+
+    async getCustomersMetric() {
+        const now = new Date();
+
+        const startCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const startNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        const startPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+        const [value, previousValue] = await Promise.all([
+            this.prisma.customer.count({
+                where: { createdAt: { gte: startCurrentMonth, lt: startNextMonth } },
+            }),
+            this.prisma.customer.count({
+                where: { createdAt: { gte: startPrevMonth, lt: startCurrentMonth } },
+            }),
+        ]);
+
+        const changePct =
+            previousValue === 0 ? (value > 0 ? 100 : 0) : ((value - previousValue) / previousValue) * 100;
+
+        const rounded = Math.round(changePct);
+
+        const trend: 'UP' | 'DOWN' | 'FLAT' =
+            rounded > 0 ? 'UP' : rounded < 0 ? 'DOWN' : 'FLAT';
+
+        return {
+            value,
+            previousValue,
+            changePct: rounded,
+            trend,
+        };
+    }
+
 }

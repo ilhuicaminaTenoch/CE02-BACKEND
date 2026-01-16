@@ -119,11 +119,32 @@ export class AppointmentsService {
             ...(mode && { mode }),
             ...(customerId && { customerId }),
             ...(leadId && { leadId }),
-            // Search if needed (e.g. in comments)
-            ...(search && {
-                comments: { contains: search, mode: 'insensitive' },
-            }),
         };
+
+        const q = search?.trim();
+
+        if (q) {
+            // Soporta "Juan Pérez" -> ["Juan", "Pérez"]
+            const terms = q.split(/\s+/).filter(Boolean);
+
+            where.AND = terms.map((term) => {
+                const digits = term.replace(/\D/g, '');
+
+                const or: Prisma.AppointmentWhereInput[] = [
+                    { customer: { is: { name: { contains: term, mode: 'insensitive' } } } },
+                    { customer: { is: { lastName: { contains: term, mode: 'insensitive' } } } },
+                    { customer: { is: { email: { contains: term, mode: 'insensitive' } } } },
+                    { customer: { is: { phone: { contains: term } } } },
+                ];
+
+                // Si el usuario mete "+52 55 3478 9809", también intenta con puros dígitos
+                if (digits && digits !== term) {
+                    or.push({ customer: { is: { phone: { contains: digits } } } });
+                }
+
+                return { OR: or };
+            });
+        }
 
         const [items, total] = await Promise.all([
             this.prisma.appointment.findMany({
