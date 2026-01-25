@@ -8,7 +8,9 @@ import { UpdateLaborCostDto } from './dto/update-labor-cost.dto';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
-import { UserRole } from '@prisma/client';
+import { UserRole, OrderStatus } from '@prisma/client';
+import { MonthOverMonthMetricsDto } from '@/common/dto/metrics-response.dto';
+import { ApiOkResponse, ApiQuery } from '@nestjs/swagger';
 
 @ApiTags('Orders & Cart')
 @ApiBearerAuth()
@@ -71,6 +73,23 @@ export class OrdersController {
     @ApiOperation({ summary: 'List all orders with filters' })
     findAll(@Query() query: OrderQueryDto) {
         return this.ordersService.findAll(query);
+    }
+
+    @Get('metrics/month-over-month')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiOperation({ summary: 'Get order metrics comparing current month vs previous month (ADMIN only)' })
+    @ApiQuery({ name: 'status', enum: OrderStatus, required: false, description: 'Filter by order status' })
+    @ApiQuery({ name: 'tzOffsetMinutes', required: false, type: Number, description: 'Timezone offset in minutes (e.g. 360 for UTC-6)' })
+    @ApiOkResponse({ type: MonthOverMonthMetricsDto })
+    getMonthOverMonthMetrics(
+        @Query('status') status?: OrderStatus,
+        @Query('tzOffsetMinutes') tzOffsetMinutes?: string,
+    ) {
+        return this.ordersService.getMonthOverMonthMetrics(
+            status,
+            tzOffsetMinutes ? parseInt(tzOffsetMinutes, 10) : 0,
+        );
     }
 
     @Get(':id')

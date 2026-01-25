@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/common/prisma/prisma.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AppointmentQueryDto } from './dto/appointment-query.dto';
-import { Prisma, LeadEventType } from '@prisma/client';
+import { Prisma, LeadEventType, AppointmentStatus, AppointmentMode } from '@prisma/client';
 import { MailService } from '../mail/mail.service';
+import { MonthOverMonthMetricsDto } from '@/common/dto/metrics-response.dto';
 import { ConfigService } from '@nestjs/config';
 import { LeadEventsService } from '../leadevents/leadevents.service';
 
@@ -119,11 +120,32 @@ export class AppointmentsService {
             ...(mode && { mode }),
             ...(customerId && { customerId }),
             ...(leadId && { leadId }),
-            // Search if needed (e.g. in comments)
-            ...(search && {
-                comments: { contains: search, mode: 'insensitive' },
-            }),
         };
+
+        const q = search?.trim();
+
+        if (q) {
+            // Soporta "Juan Pérez" -> ["Juan", "Pérez"]
+            const terms = q.split(/\s+/).filter(Boolean);
+
+            where.AND = terms.map((term) => {
+                const digits = term.replace(/\D/g, '');
+
+                const or: Prisma.AppointmentWhereInput[] = [
+                    { customer: { is: { name: { contains: term, mode: 'insensitive' } } } },
+                    { customer: { is: { lastName: { contains: term, mode: 'insensitive' } } } },
+                    { customer: { is: { email: { contains: term, mode: 'insensitive' } } } },
+                    { customer: { is: { phone: { contains: term } } } },
+                ];
+
+                // Si el usuario mete "+52 55 3478 9809", también intenta con puros dígitos
+                if (digits && digits !== term) {
+                    or.push({ customer: { is: { phone: { contains: digits } } } });
+                }
+
+                return { OR: or };
+            });
+        }
 
         const [items, total] = await Promise.all([
             this.prisma.appointment.findMany({
@@ -185,5 +207,85 @@ export class AppointmentsService {
         });
 
         return appointment;
+    }
+
+    async getMonthOverMonthMetrics(status?: AppointmentStatus, mode?: AppointmentMode, tzOffsetMinutes: number = 0) {
+        const now = new Date();
+        const adjustedNow = new Date(now.getTime() - tzOffsetMinutes * 60000);
+
+        const currentStart = new Date(Date.UTC(adjustedNow.getUTCFullYear(), adjustedNow.getUTCMonth(), 1, 0, 0, 0, 0));
+        const currentEnd = adjustedNow;
+
+        let prevYear = adjustedNow.getUTCFullYear();
+        let prevMonth = adjustedNow.getUTCMonth() - 1;
+        if (prevMonth < 0) {
+            prevMonth = 11;
+            prevYear--;
+        }
+
+        const previousStart = new Date(Date.UTC(prevYear, prevMonth, 1, 0, 0, 0, 0));
+
+        const dayOfMonth = adjustedNow.getUTCDate();
+        const lastDayOfPrevMonth = new Date(Date.UTC(prevYear, prevMonth + 1, 0)).getUTCDate();
+        const dayToUse = Math.min(dayOfMonth, lastDayOfPrevMonth);
+
+        const previousEnd = new Date(Date.UTC(
+            prevYear,
+            prevMonth,
+            dayToUse,
+            adjustedNow.getUTCHours(),
+            adjustedNow.getUTCMinutes(),
+            adjustedNow.getUTCSeconds(),
+            adjustedNow.getUTCMilliseconds()
+        ));
+
+        const currentStartUtc = new Date(currentStart.getTime() + tzOffsetMinutes * 60000);
+        const currentEndUtc = new Date(currentEnd.getTime() + tzOffsetMinutes * 60000);
+        const previousStartUtc = new Date(previousStart.getTime() + tzOffsetMinutes * 60000);
+        const previousEndUtc = new Date(previousEnd.getTime() + tzOffsetMinutes * 60000);
+
+        const whereCurrent: Prisma.AppointmentWhereInput = {
+            date: { gte: currentStartUtc, lt: currentEndUtc },
+            ...(status && { status }),
+            ...(mode && { mode }),
+        };
+
+        const wherePrevious: Prisma.AppointmentWhereInput = {
+            date: { gte: previousStartUtc, lt: previousEndUtc },
+            ...(status && { status }),
+            ...(mode && { mode }),
+        };
+
+        const [currentCount, previousCount] = await Promise.all([
+            this.prisma.appointment.count({ where: whereCurrent }),
+            this.prisma.appointment.count({ where: wherePrevious }),
+        ]);
+
+        const change = currentCount - previousCount;
+        let changePct: number | null = 0;
+        let direction: 'UP' | 'DOWN' | 'FLAT' = 'FLAT';
+
+        if (previousCount === 0) {
+            changePct = currentCount > 0 ? 100 : 0;
+        } else {
+            changePct = Math.round((change / previousCount) * 10000) / 100;
+        }
+
+        if (currentCount > previousCount) direction = 'UP';
+        else if (currentCount < previousCount) direction = 'DOWN';
+
+        return {
+            current: currentCount,
+            previous: previousCount,
+            change,
+            changePct,
+            direction,
+            period: {
+                currentStart: currentStartUtc,
+                currentEnd: currentEndUtc,
+                previousStart: previousStartUtc,
+                previousEnd: previousEndUtc,
+            },
+        } as MonthOverMonthMetricsDto;
     }
 }

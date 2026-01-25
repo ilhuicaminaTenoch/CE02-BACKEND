@@ -7,6 +7,7 @@ import { SyscomService } from '../syscom/syscom.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { LeadEventsService } from '../leadevents/leadevents.service';
 import { MailService } from '../mail/mail.service';
+import { MonthOverMonthMetricsDto } from '@/common/dto/metrics-response.dto';
 
 @Injectable()
 export class OrdersService {
@@ -394,5 +395,90 @@ export class OrdersService {
             data: { subtotal, total },
             include: { items: true, customer: true },
         });
+    }
+
+    async getMonthOverMonthMetrics(status?: OrderStatus, tzOffsetMinutes: number = 0) {
+        const now = new Date();
+        // Adjust "now" to the requested timezone to calculate boundaries correctly
+        const adjustedNow = new Date(now.getTime() - tzOffsetMinutes * 60000);
+
+        // Current Month Boundaries (MTD)
+        const currentStart = new Date(Date.UTC(adjustedNow.getUTCFullYear(), adjustedNow.getUTCMonth(), 1, 0, 0, 0, 0));
+        const currentEnd = adjustedNow;
+
+        // Previous Month Boundaries (Previous MTD)
+        let prevYear = adjustedNow.getUTCFullYear();
+        let prevMonth = adjustedNow.getUTCMonth() - 1;
+        if (prevMonth < 0) {
+            prevMonth = 11;
+            prevYear--;
+        }
+
+        const previousStart = new Date(Date.UTC(prevYear, prevMonth, 1, 0, 0, 0, 0));
+
+        // Calculate previousEnd (clamping if necessary)
+        const dayOfMonth = adjustedNow.getUTCDate();
+        const lastDayOfPrevMonth = new Date(Date.UTC(prevYear, prevMonth + 1, 0)).getUTCDate();
+        const dayToUse = Math.min(dayOfMonth, lastDayOfPrevMonth);
+
+        const previousEnd = new Date(Date.UTC(
+            prevYear,
+            prevMonth,
+            dayToUse,
+            adjustedNow.getUTCHours(),
+            adjustedNow.getUTCMinutes(),
+            adjustedNow.getUTCSeconds(),
+            adjustedNow.getUTCMilliseconds()
+        ));
+
+        // Re-adjust boundaries to UTC for Prisma queries if we shifted them
+        // Actually, currentStart and previousStart are already "start of day" in the hypothetical TZ.
+        // If the user says "I'm in UTC-6", then "00:00 local" is "06:00 UTC".
+        const currentStartUtc = new Date(currentStart.getTime() + tzOffsetMinutes * 60000);
+        const currentEndUtc = new Date(currentEnd.getTime() + tzOffsetMinutes * 60000);
+        const previousStartUtc = new Date(previousStart.getTime() + tzOffsetMinutes * 60000);
+        const previousEndUtc = new Date(previousEnd.getTime() + tzOffsetMinutes * 60000);
+
+        const whereCurrent: Prisma.OrderWhereInput = {
+            createdAt: { gte: currentStartUtc, lt: currentEndUtc },
+            ...(status && { status }),
+        };
+
+        const wherePrevious: Prisma.OrderWhereInput = {
+            createdAt: { gte: previousStartUtc, lt: previousEndUtc },
+            ...(status && { status }),
+        };
+
+        const [currentCount, previousCount] = await Promise.all([
+            this.prisma.order.count({ where: whereCurrent }),
+            this.prisma.order.count({ where: wherePrevious }),
+        ]);
+
+        const change = currentCount - previousCount;
+        let changePct: number | null = 0;
+        let direction: 'UP' | 'DOWN' | 'FLAT' = 'FLAT';
+
+        if (previousCount === 0) {
+            changePct = currentCount > 0 ? 100 : 0;
+        } else {
+            changePct = Math.round((change / previousCount) * 10000) / 100;
+        }
+
+        if (currentCount > previousCount) direction = 'UP';
+        else if (currentCount < previousCount) direction = 'DOWN';
+
+        return {
+            current: currentCount,
+            previous: previousCount,
+            change,
+            changePct,
+            direction,
+            period: {
+                currentStart: currentStartUtc,
+                currentEnd: currentEndUtc,
+                previousStart: previousStartUtc,
+                previousEnd: previousEndUtc,
+            },
+        } as MonthOverMonthMetricsDto;
     }
 }

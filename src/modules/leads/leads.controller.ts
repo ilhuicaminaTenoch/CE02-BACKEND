@@ -1,9 +1,10 @@
 import { Controller, Get, Post, Body, Param, Query, Patch, NotFoundException, Ip, Headers } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import {ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse} from '@nestjs/swagger';
 import { LeadsService } from './leads.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { LeadQueryDto } from './dto/lead-query.dto';
 import { Public } from '@/common/decorators/public.decorator';
+import {DashboardMetricDto} from "@/modules/leads/dto/dashboard-metric.dto";
 
 @ApiTags('Leads')
 @ApiBearerAuth()
@@ -46,4 +47,12 @@ export class LeadsController {
     ) {
         return this.leadsService.update(id, data, ip, userAgent);
     }
+
+    @Get('metrics/customers')
+    @ApiOperation({ summary: 'Dashboard: Clientes (mes actual vs mes pasado)' })
+    @ApiOkResponse({ type: DashboardMetricDto })
+    getCustomersMetric() {
+        return this.leadsService.getCustomersMetric();
+    }
+
 }

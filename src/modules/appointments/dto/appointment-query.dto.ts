@@ -1,7 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { AppointmentStatus, AppointmentMode } from '@prisma/client';
-import { IsEnum, IsOptional, IsUUID } from 'class-validator';
+import {IsEnum, IsOptional, IsString, IsUUID} from 'class-validator';
 import { PaginationDto } from '@/common/dto/pagination.dto';
+import {Transform} from "class-transformer";
 
 export class AppointmentQueryDto extends PaginationDto {
     @ApiPropertyOptional({ enum: AppointmentStatus })
@@ -23,4 +24,13 @@ export class AppointmentQueryDto extends PaginationDto {
     @IsUUID()
     @IsOptional()
     leadId?: string;
+
+    @ApiPropertyOptional({
+        description: 'Busca por nombre, apellido, email o teléfono del cliente',
+        example: 'juan perez / 5534789809 / juan@mail.com',
+    })
+    @IsString()
+    @IsOptional()
+    @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+    search?: string;
 }
