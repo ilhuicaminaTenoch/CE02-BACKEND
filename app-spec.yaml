@@ -1,0 +1,36 @@
+name: prograde-backend
+region: nyc
+services:
+  - name: prograde-api
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    dockerfile_path: Dockerfile
+    http_port: 3000
+    routes:
+      - path: /api
+    build_command: npm run build
+    run_command: npx prisma migrate deploy && npm run start:prod
+    health_check:
+      http_path: /api/health
+      initial_delay_seconds: 10
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+    envs:
+      - key: NODE_ENV
+        scope: RUN_TIME
+        value: production
+      - key: PORT
+        scope: RUN_TIME
+        value: "3000"
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: ${db.DATABASE_URL}
+databases:
+  - engine: PGBO
+    name: db
+    num_nodes: 1
+    size_slug: db-s-dev-7gb
+    version: "15"

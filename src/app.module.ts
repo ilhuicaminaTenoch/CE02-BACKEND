@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { APP_GUARD } from '@nestjs/core';
 import { HealthController } from './modules/health/health.controller';
 import { PrismaService } from './common/prisma/prisma.service';
@@ -21,6 +22,7 @@ import { RolesGuard } from './common/guards/roles.guard';
             isGlobal: true,
             envFilePath: ['.env'],
         }),
+        ScheduleModule.forRoot(),
         SyscomModule,
         ProductsModule,
         CustomersModule,
