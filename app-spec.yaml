@@ -24,7 +24,3 @@ services:
       - key: PORT
         scope: RUN_TIME
         value: "3000"
-      - key: DATABASE_URL
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: ${DATABASE_URL}
