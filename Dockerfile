@@ -31,7 +31,7 @@ COPY --from=builder /app/dist ./dist/
 COPY --from=builder /app/prisma ./prisma/
 
 # DigitalOcean App Platform provides PORT env
-EXPOSE 3000
+EXPOSE 8080
 
 # Run migrations and then the app
 CMD ["sh", "-c", "npx prisma migrate deploy && npm run start:prod"]
