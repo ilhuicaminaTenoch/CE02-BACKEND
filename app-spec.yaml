@@ -1,5 +1,5 @@
 name: prograde-backend
-region: nyc
+region: sfo
 services:
   - name: prograde-api
     instance_count: 1
@@ -27,10 +27,4 @@ services:
       - key: DATABASE_URL
         scope: RUN_TIME
         type: SECRET
-        value: ${db.DATABASE_URL}
-databases:
-  - engine: PGBO
-    name: db
-    num_nodes: 1
-    size_slug: db-s-dev-7gb
-    version: "15"
+        value: ${DATABASE_URL}
