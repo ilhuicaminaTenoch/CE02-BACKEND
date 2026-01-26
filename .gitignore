@@ -97,6 +97,7 @@ web_modules/
 .env.test.local
 .env.production.local
 .env.local
+.env.example
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -295,5 +296,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/node,webstorm,windows,linux!/.env
-!/.env
+# End of https://www.toptal.com/developers/gitignore/api/node,webstorm,windows,linux!
