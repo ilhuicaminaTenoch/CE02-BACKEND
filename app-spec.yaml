@@ -8,7 +8,7 @@ services:
     http_port: 3000
     routes:
       - path: /api
-    build_command: npm run build
+    build_command: npx prisma generate && npm run build
     run_command: npx prisma migrate deploy && npm run start:prod
     health_check:
       http_path: /api/health
@@ -25,6 +25,6 @@ services:
         scope: RUN_TIME
         value: "3000"
       - key: DATABASE_URL
-        scope: RUN_TIME
+        scope: RUN_AND_BUILD_TIME
         type: SECRET
         value: ${DATABASE_URL}
