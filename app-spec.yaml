@@ -5,7 +5,7 @@ services:
     instance_count: 1
     instance_size_slug: basic-xxs
     dockerfile_path: Dockerfile
-    http_port: 3000
+    http_port: 8080
     routes:
       - path: /api
     build_command: npx prisma generate && npm run build
@@ -23,4 +23,4 @@ services:
         value: production
       - key: PORT
         scope: RUN_TIME
-        value: "3000"
+        value: "8080"
