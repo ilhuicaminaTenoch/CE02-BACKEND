@@ -1,4 +1,4 @@
-name: prograde-backend
+name: backend
 region: sfo
 services:
   - name: prograde-api
