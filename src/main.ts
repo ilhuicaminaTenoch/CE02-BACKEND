@@ -23,16 +23,18 @@ async function bootstrap() {
     app.enableCors();
 
     // Swagger
-    const config = new DocumentBuilder()
-        .setTitle('Prograde CCTV & Automation API')
-        .setDescription('API for managing customers, leads, appointments, and orders.')
-        .setVersion('1.0')
-        .addBearerAuth()
-        .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api/docs', app, document);
+    if (process.env.NODE_ENV !== 'production') {
+        const config = new DocumentBuilder()
+            .setTitle('Prograde CCTV & Automation API')
+            .setDescription('API for managing customers, leads, appointments, and orders.')
+            .setVersion('1.0')
+            .addBearerAuth()
+            .build();
+        const document = SwaggerModule.createDocument(app, config);
+        SwaggerModule.setup('api/docs', app, document);
+    }
 
-    const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 8080;
     await app.listen(port);
     logger.log(`Application is running on: http://localhost:${port}/api`);
     logger.log(`Swagger documentation: http://localhost:${port}/api/docs`);
