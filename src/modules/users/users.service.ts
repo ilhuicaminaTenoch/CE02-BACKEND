@@ -16,9 +16,9 @@ export class UsersService implements OnModuleInit {
     }
 
     private async seedAdmin() {
-        const email = this.configService.get<string>('ADMIN_EMAIL', 'admin@demo.com');
-        const password = this.configService.get<string>('ADMIN_PASSWORD', 'SuperSecret123!');
-        const fullName = this.configService.get<string>('ADMIN_FULL_NAME', 'Administrador');
+        const email = this.configService.get<string>('ADMIN_EMAIL', '');
+        const password = this.configService.get<string>('ADMIN_PASSWORD', '');
+        const fullName = this.configService.get<string>('ADMIN_FULL_NAME', '');
 
         const existingAdmin = await this.prisma.user.findUnique({
             where: { email },
@@ -58,4 +58,26 @@ export class UsersService implements OnModuleInit {
             },
         });
     }
+
+    async create(data: any) {
+        const { password, ...userData } = data;
+        const passwordHash = await bcrypt.hash(password, 10);
+
+        return this.prisma.user.create({
+            data: {
+                ...userData,
+                passwordHash,
+            },
+            select: {
+                id: true,
+                email: true,
+                fullName: true,
+                role: true,
+                isActive: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
+    }
 }
+

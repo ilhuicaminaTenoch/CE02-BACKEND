@@ -26,54 +26,72 @@ export class CustomersService {
             landingPath,
         } = createCustomerDto;
 
-        // Check if customer already exists for idempotency/upsert-like behavior
-        const existingCustomer = await this.prisma.customer.findUnique({
-            where: { email },
+        const existingCustomer = await this.prisma.customer.findFirst({
+            where: {
+                OR: [{ email }, { phone }],
+            },
             include: { addresses: true },
         });
 
-        if (existingCustomer) {
-            // Return existing customer instead of throwing error
-            return existingCustomer;
-        }
+        let customer;
 
         try {
-            const dataForPrisma: Prisma.CustomerCreateInput = {
-                email,
-                name,
-                lastName,
-                phone,
-                contactMethod,
-                addresses: {
-                    create: addresses?.map(address => ({
-                        street: address.street,
-                        city: address.city,
-                        state: address.state,
-                        zipCode: address.zipCode,
-                        noInt: address.noInt,
-                        noExt: address.noExt || (address as any).NoExt,
-                        settlement: address.settlement,
-                    })) || [],
-                },
-            };
+            if (existingCustomer) {
+                customer = await this.prisma.customer.update({
+                    where: { id: existingCustomer.id },
+                    data: {
+                        name,
+                        lastName,
+                        addresses: {
+                            create: addresses?.map(address => ({
+                                street: address.street,
+                                city: address.city,
+                                state: address.state,
+                                zipCode: address.zipCode,
+                                noInt: address.noInt,
+                                noExt: address.noExt || (address as any).NoExt,
+                                settlement: address.settlement,
+                            })) || [],
+                        },
+                    },
+                    include: { addresses: true },
+                });
+            } else {
+                customer = await this.prisma.customer.create({
+                    data: {
+                        email,
+                        name,
+                        lastName,
+                        phone,
+                        contactMethod,
+                        addresses: {
+                            create: addresses?.map(address => ({
+                                street: address.street,
+                                city: address.city,
+                                state: address.state,
+                                zipCode: address.zipCode,
+                                noInt: address.noInt,
+                                noExt: address.noExt || (address as any).NoExt,
+                                settlement: address.settlement,
+                            })) || [],
+                        },
+                    },
+                    include: { addresses: true },
+                });
+            }
 
-            const customer = await this.prisma.customer.create({
-                data: dataForPrisma,
-                include: { addresses: true },
-            });
-
-            // Register LeadEvent
             await this.leadEventsService.createEvent({
                 customerId: customer.id,
                 type: LeadEventType.CUSTOMER_CREATED,
                 metadata: {
-                    utm_source: createCustomerDto.utm_source,
+                    action: existingCustomer ? 'CUSTOMER_UPDATED_FROM_FUNNEL' : 'CUSTOMER_CREATED',
+                    utm_source,
                     utm_medium: createCustomerDto.utm_medium,
-                    utm_campaign: createCustomerDto.utm_campaign,
+                    utm_campaign,
                     utm_content: createCustomerDto.utm_content,
                     utm_term: createCustomerDto.utm_term,
-                    referrer: createCustomerDto.referrer,
-                    landingPath: createCustomerDto.landingPath,
+                    referrer,
+                    landingPath,
                 },
                 ip,
                 userAgent,
@@ -81,14 +99,13 @@ export class CustomersService {
 
             return customer;
         } catch (error) {
-            if (error instanceof Prisma.PrismaClientKnownRequestError) {
-                if (error.code === 'P2002') {
-                    // Fallback in case of race condition
-                    return this.prisma.customer.findUnique({
-                        where: { email },
-                        include: { addresses: true },
-                    });
-                }
+            console.error('Error in customer creation/update:', error);
+            // Fallback for extreme race conditions
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+                return this.prisma.customer.findFirst({
+                    where: { OR: [{ email }, { phone }] },
+                    include: { addresses: true },
+                });
             }
             throw error;
         }
