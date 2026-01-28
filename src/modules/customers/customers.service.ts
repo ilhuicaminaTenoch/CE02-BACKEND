@@ -26,7 +26,6 @@ export class CustomersService {
             landingPath,
         } = createCustomerDto;
 
-        // 1. Check for existing customer by email OR phone
         const existingCustomer = await this.prisma.customer.findFirst({
             where: {
                 OR: [{ email }, { phone }],
@@ -38,7 +37,6 @@ export class CustomersService {
 
         try {
             if (existingCustomer) {
-                // 2. INTELLIGENT UPDATE: Update basic info and ADD new addresses
                 customer = await this.prisma.customer.update({
                     where: { id: existingCustomer.id },
                     data: {
@@ -59,7 +57,6 @@ export class CustomersService {
                     include: { addresses: true },
                 });
             } else {
-                // 3. CREATE NEW: Standard creation flow
                 customer = await this.prisma.customer.create({
                     data: {
                         email,
@@ -83,7 +80,6 @@ export class CustomersService {
                 });
             }
 
-            // 4. Track LeadEvent regardless of create or update
             await this.leadEventsService.createEvent({
                 customerId: customer.id,
                 type: LeadEventType.CUSTOMER_CREATED,
@@ -101,7 +97,6 @@ export class CustomersService {
                 userAgent,
             });
 
-            console.log(customer);
             return customer;
         } catch (error) {
             console.error('Error in customer creation/update:', error);

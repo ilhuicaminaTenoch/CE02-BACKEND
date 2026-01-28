@@ -17,7 +17,10 @@ export class LeadEventsAutoCloseCron {
         private configService: ConfigService,
     ) { }
 
-    @Cron(process.env.AUTO_CLOSE_CRON || '0 0 2 * * *')
+    @Cron(process.env.AUTO_CLOSE_CRON || '0 0 2 * * *', {
+        name: 'LeadEventsAutoClose',
+        disabled: true,
+    })
     async handleAutoClose() {
         const isEnabled = this.configService.get<boolean>('AUTO_CLOSE_ENABLED', true);
         if (!isEnabled) {
