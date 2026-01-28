@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { HealthController } from './modules/health/health.controller';
 import { PrismaService } from './common/prisma/prisma.service';
 import { ProductsModule } from './modules/products/products.module';
@@ -22,6 +23,10 @@ import { RolesGuard } from './common/guards/roles.guard';
             isGlobal: true,
             envFilePath: ['.env'],
         }),
+        ThrottlerModule.forRoot([{
+            ttl: 60000,
+            limit: 60,
+        }]),
         ScheduleModule.forRoot(),
         SyscomModule,
         ProductsModule,
@@ -36,6 +41,10 @@ import { RolesGuard } from './common/guards/roles.guard';
     controllers: [HealthController],
     providers: [
         PrismaService,
+        {
+            provide: APP_GUARD,
+            useClass: ThrottlerGuard,
+        },
         {
             provide: APP_GUARD,
             useClass: JwtAuthGuard,
