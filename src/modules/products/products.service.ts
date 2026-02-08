@@ -47,7 +47,9 @@ export class ProductsService {
     }
 
     private mapProduct(p: any, exchangeRate: number) {
-        const priceUsd = parseFloat(p.precios?.precio_lista || '0');
+        const MARGIN_MULTIPLIER = 1.15;
+        const basePriceUsd = parseFloat(p.precios?.precio_lista || '0');
+        const priceUsd = basePriceUsd * MARGIN_MULTIPLIER;
         const priceMxn = priceUsd * exchangeRate;
 
         return {
@@ -56,7 +58,7 @@ export class ProductsService {
             model: p.modelo,
             description: p.titulo,
             price: Math.round(priceMxn * 100) / 100, // Round to 2 decimals
-            priceUsd: priceUsd,
+            priceUsd: Math.round(priceUsd * 100) / 100,
             exchangeRate: exchangeRate,
             stock: p.total_existencia || 0,
             image: p.img_portada,
